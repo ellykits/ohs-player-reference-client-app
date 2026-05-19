@@ -35,7 +35,7 @@ import org.gradle.api.tasks.TaskProvider
  * 2. Resolves the IG directory from (in order):
  *     - Gradle property `ohs.ig.dir` (set via `-Pohs.ig.dir=…` or `gradle.properties`)
  *     - `local.properties` key `ohs.ig.dir`
- *     - Sibling directory `../ohs-sample-ig/fsh-generated/resources` relative to root project.
+ *     - Fails with a clear error if neither is set.
  * 3. Wires the output directory into the KMP `commonMain` source set so generated sources are
  *    compiled automatically.
  */
@@ -115,12 +115,10 @@ class IgCodegenPlugin : Plugin<Project> {
   }
 
   private fun resolveIgDir(project: Project): String {
-    // 1. Gradle property
     project.findProperty("ohs.ig.dir")?.toString()?.let {
       return it
     }
 
-    // 2. local.properties
     val localPropsFile = project.rootProject.file("local.properties")
     if (localPropsFile.exists()) {
       val props = Properties()
@@ -130,7 +128,9 @@ class IgCodegenPlugin : Plugin<Project> {
       }
     }
 
-    // 3. Sibling directory fallback
-    return project.rootProject.file("../ohs-sample-ig/fsh-generated/resources").absolutePath
+    error(
+      "ig-codegen: 'ohs.ig.dir' is not set. " +
+        "Add it to local.properties or pass -Pohs.ig.dir=<path> on the command line."
+    )
   }
 }

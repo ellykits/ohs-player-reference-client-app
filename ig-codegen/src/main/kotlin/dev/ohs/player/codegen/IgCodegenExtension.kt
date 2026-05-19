@@ -41,11 +41,8 @@ abstract class IgCodegenExtension @Inject constructor(objects: ObjectFactory) {
    * Resolution order:
    * 1. Gradle property `ohs.ig.dir` (set via `-Pohs.ig.dir=…` or `gradle.properties`)
    * 2. `local.properties` key `ohs.ig.dir`
-   * 3. Fallback: sibling directory `../ohs-sample-ig/fsh-generated/resources` relative to root
-   *    project.
    *
-   * Resolved automatically in [IgCodegenPlugin] — you only need to set this if the auto-resolution
-   * does not locate your IG.
+   * Build fails with a clear error if neither is set.
    */
   val igDir: Property<String> = objects.property(String::class.java)
 
