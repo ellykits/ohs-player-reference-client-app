@@ -24,6 +24,8 @@ plugins {
   alias(libs.plugins.composeCompiler)
   alias(libs.plugins.composeHotReload)
   alias(libs.plugins.kotlinSerialization)
+  id("dev.ohs.ig-codegen")
+  id("spotless-conventions")
 }
 
 kotlin {
@@ -72,6 +74,7 @@ kotlin {
     commonTest.dependencies {
       implementation(libs.kotlin.test)
       implementation(libs.compose.uiTest)
+      implementation(libs.kotlinx.coroutines.test)
     }
     jvmMain.dependencies {
       implementation(compose.desktop.currentOs)
@@ -98,6 +101,13 @@ android {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
+}
+
+igCodegen {
+  // igDir resolves automatically: gradle property ohs.ig.dir → local.properties ohs.ig.dir
+  //   → sibling directory ../ohs-sample-ig/fsh-generated/resources
+  packageName = "dev.ohs.player.generated"
+  // Sub-package routing is fixed by convention — no configuration needed.
 }
 
 dependencies { debugImplementation(libs.compose.uiTooling) }

@@ -29,10 +29,6 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalTestApi::class)
 class PatientListScreenTest {
 
-  /**
-   * End-to-end smoke for the list flow: app registry → ListScaffold → registered card renderer →
-   * click handler. If any link in that chain breaks, this test fails.
-   */
   @Test
   fun tappingPatient_invokesOnPatientClickWithMatchingId() = runComposeUiTest {
     val registry = buildAppViewRegistry()

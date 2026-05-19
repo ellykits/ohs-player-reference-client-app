@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.diffplug.gradle.spotless.SpotlessExtension
-
 plugins {
   // this is necessary to avoid the plugins to be loaded multiple times
   // in each subproject's classloader
@@ -25,26 +23,5 @@ plugins {
   alias(libs.plugins.composeHotReload) apply false
   alias(libs.plugins.composeMultiplatform) apply false
   alias(libs.plugins.kotlinMultiplatform) apply false
-  alias(libs.plugins.spotless)
-}
-
-allprojects {
-  apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
-
-  configure<SpotlessExtension> {
-    val ktfmtVersion = rootProject.libs.versions.ktfmt.get()
-    val licenseHeaderFile = rootProject.file("license-header.txt")
-    ratchetFrom = "origin/main"
-
-    kotlin {
-      target("src/**/*.kt")
-      ktfmt(ktfmtVersion).googleStyle()
-      licenseHeaderFile(licenseHeaderFile)
-    }
-    kotlinGradle {
-      target("*.gradle.kts")
-      ktfmt(ktfmtVersion).googleStyle()
-      licenseHeaderFile(licenseHeaderFile, "(^(?![\\/ ]\\*).*$)")
-    }
-  }
+  id("spotless-conventions")
 }

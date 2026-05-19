@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.ohs.player.library.registry.ViewType
 import dev.ohs.player.library.renderer.ConfiguredRenderer
 import dev.ohs.player.library.renderer.LayoutRenderer
 
@@ -54,6 +55,14 @@ class VerticalListRenderer<T>(
   private val contentPadding: PaddingValues = PaddingValues(0.dp),
   private val itemSpacing: Dp = 0.dp,
 ) : LayoutRenderer<T> {
+  companion object {
+    /**
+     * ViewType constant for registering a [VerticalListRenderer] in the
+     * [dev.ohs.player.library.registry.ViewRegistry].
+     */
+    val VIEW_TYPE = ViewType("VerticalList")
+  }
+
   /** Lays out [items] in a `LazyColumn`, invoking [component] per item with [key]. */
   @Composable
   override fun Render(

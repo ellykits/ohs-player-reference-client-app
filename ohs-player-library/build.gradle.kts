@@ -22,6 +22,8 @@ plugins {
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.composeMultiplatform)
   alias(libs.plugins.composeCompiler)
+  id("dev.ohs.ig-codegen")
+  id("spotless-conventions")
 }
 
 kotlin {
@@ -50,6 +52,7 @@ kotlin {
       api(libs.kotlinx.serialization.json)
       implementation(libs.ohs.fhir.model)
       api(libs.ohs.fhir.path)
+      implementation(libs.ionspin.bignum)
       implementation(libs.kotlinx.datetime)
       implementation(libs.compose.runtime)
       implementation(libs.compose.ui)
