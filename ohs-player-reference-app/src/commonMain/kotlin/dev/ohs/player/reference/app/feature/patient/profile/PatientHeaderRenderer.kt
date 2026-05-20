@@ -47,7 +47,7 @@ class PatientHeaderRenderer : ComponentRenderer<PatientSummaryState, PatientHead
   override fun Render(
     item: PatientSummaryState,
     config: PatientHeaderConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     PatientHeaderCard(patient = item, config = config, modifier = modifier)

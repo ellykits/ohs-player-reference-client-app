@@ -33,7 +33,7 @@ import androidx.compose.ui.Modifier
  *     override fun Render(
  *         item: PatientView,
  *         config: PatientCardConfig,
- *         onClick: () -> Unit,
+ *         onClick: (() -> Unit)?,
  *         modifier: Modifier,
  *     ) {
  *         Card(onClick = onClick, modifier = modifier) {
@@ -50,11 +50,11 @@ interface ComponentRenderer<T, C> {
    *
    * @param item the data model instance.
    * @param config configuration for this render call.
-   * @param onClick tap handler; defaults to no-op.
+   * @param onClick optional onclick handler; defaults to null.
    * @param modifier applied to the root composable.
    */
   @Composable
-  fun Render(item: T, config: C, onClick: () -> Unit = {}, modifier: Modifier = Modifier)
+  fun Render(item: T, config: C, onClick: (() -> Unit)? = null, modifier: Modifier = Modifier)
 }
 
 /**
@@ -77,7 +77,7 @@ fun interface ConfiguredRenderer<T> {
    * @param onClick tap handler.
    * @param modifier applied to the root composable.
    */
-  @Composable fun Render(item: T, onClick: () -> Unit, modifier: Modifier)
+  @Composable fun Render(item: T, onClick: (() -> Unit)?, modifier: Modifier)
 }
 
 /**

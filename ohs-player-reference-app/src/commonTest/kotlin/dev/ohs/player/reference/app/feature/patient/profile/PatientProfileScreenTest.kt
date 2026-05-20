@@ -40,6 +40,9 @@ class PatientProfileScreenTest {
       }
     }
 
+    waitUntil(timeoutMillis = 5_000L) {
+      onAllNodesWithText("Amina Diallo").fetchSemanticsNodes().isNotEmpty()
+    }
     val scrollable = onNode(hasScrollAction())
     listOf("Amina Diallo", "Allergies", "Medications", "Conditions", "Immunizations").forEach { text
       ->

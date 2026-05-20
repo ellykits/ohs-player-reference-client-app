@@ -30,7 +30,12 @@ private data object TestConfig
 
 private class StringRenderer : ComponentRenderer<String, TestConfig> {
   @Composable
-  override fun Render(item: String, config: TestConfig, onClick: () -> Unit, modifier: Modifier) {}
+  override fun Render(
+    item: String,
+    config: TestConfig,
+    onClick: (() -> Unit)?,
+    modifier: Modifier,
+  ) {}
 }
 
 private class StringLayoutRenderer : LayoutRenderer<String> {

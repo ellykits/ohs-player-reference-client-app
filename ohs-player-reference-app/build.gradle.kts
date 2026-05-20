@@ -105,9 +105,7 @@ android {
 
 igCodegen {
   // igDir resolves automatically: gradle property ohs.ig.dir → local.properties ohs.ig.dir
-  //   → sibling directory ../ohs-sample-ig/fsh-generated/resources
   packageName = "dev.ohs.player.generated"
-  // Sub-package routing is fixed by convention — no configuration needed.
 }
 
 dependencies { debugImplementation(libs.compose.uiTooling) }

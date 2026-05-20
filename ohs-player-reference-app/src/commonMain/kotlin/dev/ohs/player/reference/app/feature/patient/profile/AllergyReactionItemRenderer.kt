@@ -36,7 +36,7 @@ class AllergyReactionItemRenderer :
   override fun Render(
     item: AllergyReactionState,
     config: AllergyReactionItemConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     AllergyReactionItemRow(item = item, config = config, modifier = modifier)

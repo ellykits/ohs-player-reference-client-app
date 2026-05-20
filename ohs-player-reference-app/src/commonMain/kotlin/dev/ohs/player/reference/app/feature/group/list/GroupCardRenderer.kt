@@ -26,7 +26,7 @@ class GroupCardRenderer : ComponentRenderer<GroupListState, GroupCardConfig> {
   override fun Render(
     item: GroupListState,
     config: GroupCardConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     GroupCard(group = item, config = config, onClick = onClick)

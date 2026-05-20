@@ -48,7 +48,7 @@ class GroupHeaderRenderer : ComponentRenderer<GroupHeaderState, GroupHeaderConfi
   override fun Render(
     item: GroupHeaderState,
     config: GroupHeaderConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     GroupHeaderCard(item = item, config = config, modifier = modifier)

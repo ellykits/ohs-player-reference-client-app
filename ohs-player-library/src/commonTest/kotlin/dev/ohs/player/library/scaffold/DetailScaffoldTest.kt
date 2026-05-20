@@ -44,7 +44,7 @@ private class LabeledRenderer(private val label: String) :
   override fun Render(
     item: String,
     config: DetailTestConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     Text("[$label] $item")

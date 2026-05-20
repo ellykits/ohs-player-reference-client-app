@@ -44,7 +44,7 @@ class AllergyItemRenderer : ComponentRenderer<PatientAllergyState, AllergyItemCo
   override fun Render(
     item: PatientAllergyState,
     config: AllergyItemConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     AllergyItemRow(item = item, config = config, modifier = modifier)

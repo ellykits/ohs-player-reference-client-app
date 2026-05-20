@@ -26,7 +26,7 @@ class PatientCardRenderer : ComponentRenderer<PatientSummaryState, PatientCardCo
   override fun Render(
     item: PatientSummaryState,
     config: PatientCardConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     PatientCard(patient = item, config = config, onClick = onClick)

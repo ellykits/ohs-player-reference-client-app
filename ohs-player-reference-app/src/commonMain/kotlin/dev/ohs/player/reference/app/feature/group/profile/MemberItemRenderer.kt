@@ -47,7 +47,7 @@ class MemberItemRenderer : ComponentRenderer<GroupMemberState, MemberItemConfig>
   override fun Render(
     item: GroupMemberState,
     config: MemberItemConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     MemberItemRow(item = item, config = config, onClick = onClick, modifier = modifier)

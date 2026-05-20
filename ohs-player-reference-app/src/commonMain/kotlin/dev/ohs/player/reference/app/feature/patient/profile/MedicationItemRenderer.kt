@@ -44,7 +44,7 @@ class MedicationItemRenderer : ComponentRenderer<PatientMedicationState, Medicat
   override fun Render(
     item: PatientMedicationState,
     config: MedicationItemConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     MedicationItemRow(item = item, config = config, modifier = modifier)

@@ -47,7 +47,7 @@ class ConditionItemRenderer : ComponentRenderer<PatientConditionState, Condition
   override fun Render(
     item: PatientConditionState,
     config: ConditionItemConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     ConditionItemRow(item = item, config = config, modifier = modifier)

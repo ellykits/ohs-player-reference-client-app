@@ -49,10 +49,10 @@ private class TextRenderer : ComponentRenderer<String, ListTestConfig> {
   override fun Render(
     item: String,
     config: ListTestConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
-    Text(text = item, modifier = modifier.clickable { onClick() })
+    Text(text = item, modifier = modifier.clickable { onClick?.invoke() })
   }
 }
 

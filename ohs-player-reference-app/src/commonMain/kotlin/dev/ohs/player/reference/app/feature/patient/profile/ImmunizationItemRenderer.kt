@@ -45,7 +45,7 @@ class ImmunizationItemRenderer :
   override fun Render(
     item: PatientImmunizationState,
     config: ImmunizationItemConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     ImmunizationItemRow(item = item, config = config, modifier = modifier)

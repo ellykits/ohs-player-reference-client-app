@@ -96,7 +96,7 @@ internal constructor(
    * }
    * ```
    */
-  fun component(content: @Composable (T, onClick: () -> Unit) -> Unit) {
+  fun component(content: @Composable (T, onClick: (() -> Unit)?) -> Unit) {
     component = ConfiguredRenderer { item, onClick, _ -> content(item, onClick) }
   }
 

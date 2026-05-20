@@ -41,7 +41,7 @@ class ContactItemRenderer : ComponentRenderer<PatientContactState, ContactItemCo
   override fun Render(
     item: PatientContactState,
     config: ContactItemConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     ContactItemRow(item = item, config = config, modifier = modifier)

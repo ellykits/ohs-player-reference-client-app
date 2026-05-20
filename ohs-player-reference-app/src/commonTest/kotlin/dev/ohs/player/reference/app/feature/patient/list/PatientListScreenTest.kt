@@ -18,6 +18,7 @@ package dev.ohs.player.reference.app.feature.patient.list
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
@@ -39,6 +40,9 @@ class PatientListScreenTest {
       }
     }
 
+    waitUntil(timeoutMillis = 5_000L) {
+      onAllNodesWithText("Amina Diallo").fetchSemanticsNodes().isNotEmpty()
+    }
     onNodeWithText("Amina Diallo").performClick()
     assertEquals("p1", clickedId)
   }

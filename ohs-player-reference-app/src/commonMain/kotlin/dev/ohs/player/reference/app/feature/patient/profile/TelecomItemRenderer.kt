@@ -38,7 +38,7 @@ class TelecomItemRenderer : ComponentRenderer<PatientTelecomState, TelecomItemCo
   override fun Render(
     item: PatientTelecomState,
     config: TelecomItemConfig,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier,
   ) {
     TelecomItemRow(item = item, config = config, modifier = modifier)
