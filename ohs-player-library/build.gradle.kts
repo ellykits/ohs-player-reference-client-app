@@ -22,7 +22,6 @@ plugins {
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.composeMultiplatform)
   alias(libs.plugins.composeCompiler)
-  id("dev.ohs.ig-codegen")
   id("spotless-conventions")
 }
 
