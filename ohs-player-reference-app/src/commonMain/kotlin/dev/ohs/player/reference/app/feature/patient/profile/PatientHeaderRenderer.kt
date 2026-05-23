@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.PatientHeaderConfig
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 import dev.ohs.player.reference.app.feature.component.common.StatusChip
 import dev.ohs.player.reference.app.feature.patient.list.calculateAge
 
@@ -47,10 +48,9 @@ class PatientHeaderRenderer : ComponentRenderer<PatientSummaryState, PatientHead
   override fun Render(
     item: PatientSummaryState,
     config: PatientHeaderConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
+    options: RenderOptions,
   ) {
-    PatientHeaderCard(patient = item, config = config, modifier = modifier)
+    PatientHeaderCard(patient = item, config = config, modifier = options.modifier)
   }
 }
 

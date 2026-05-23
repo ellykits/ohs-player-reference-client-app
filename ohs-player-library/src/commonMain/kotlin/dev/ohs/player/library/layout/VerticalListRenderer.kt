@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.library.registry.ViewType
 import dev.ohs.player.library.renderer.ConfiguredRenderer
 import dev.ohs.player.library.renderer.LayoutRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 
 /**
  * Renders items vertically as a `LazyColumn`. The default layout for
@@ -78,7 +79,7 @@ class VerticalListRenderer<T>(
       verticalArrangement = Arrangement.spacedBy(itemSpacing),
     ) {
       items(items = items, key = key) { item ->
-        component.Render(item, { onItemClick(item) }, Modifier)
+        component.Render(item, RenderOptions(onClick = { onItemClick(item) }))
       }
     }
   }

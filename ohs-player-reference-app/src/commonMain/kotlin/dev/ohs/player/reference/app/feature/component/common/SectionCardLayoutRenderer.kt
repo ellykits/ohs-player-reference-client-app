@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.SectionCardConfig
 import dev.ohs.player.library.renderer.ConfiguredRenderer
 import dev.ohs.player.library.renderer.LayoutRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 
 /**
  * Layout renderer that wraps a list of items inside a titled section card. Registered under
@@ -165,7 +166,7 @@ class SectionCardLayoutRenderer<T>(
                       modifier = Modifier.padding(vertical = 2.dp),
                       color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
                     )
-                  component.Render(item, { onItemClick(item) }, Modifier)
+                  component.Render(item, RenderOptions(onClick = { onItemClick(item) }))
                 }
               }
             }

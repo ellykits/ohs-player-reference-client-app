@@ -16,19 +16,14 @@
 package dev.ohs.player.reference.app.feature.group.list
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import dev.ohs.player.generated.config.GroupCardConfig
 import dev.ohs.player.generated.state.GroupListState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 
 class GroupCardRenderer : ComponentRenderer<GroupListState, GroupCardConfig> {
   @Composable
-  override fun Render(
-    item: GroupListState,
-    config: GroupCardConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
-  ) {
-    GroupCard(group = item, config = config, onClick = onClick)
+  override fun Render(item: GroupListState, config: GroupCardConfig, options: RenderOptions) {
+    GroupCard(group = item, config = config, onClick = options.onClick)
   }
 }

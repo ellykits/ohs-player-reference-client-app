@@ -41,17 +41,13 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.GroupHeaderConfig
 import dev.ohs.player.generated.state.GroupHeaderState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 import dev.ohs.player.reference.app.feature.component.common.Chip
 
 class GroupHeaderRenderer : ComponentRenderer<GroupHeaderState, GroupHeaderConfig> {
   @Composable
-  override fun Render(
-    item: GroupHeaderState,
-    config: GroupHeaderConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
-  ) {
-    GroupHeaderCard(item = item, config = config, modifier = modifier)
+  override fun Render(item: GroupHeaderState, config: GroupHeaderConfig, options: RenderOptions) {
+    GroupHeaderCard(item = item, config = config, modifier = options.modifier)
   }
 }
 

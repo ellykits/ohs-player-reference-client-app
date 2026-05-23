@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.ConditionItemConfig
 import dev.ohs.player.generated.state.PatientConditionState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 import dev.ohs.player.reference.app.feature.component.common.Chip
 
 private val AmberAccent = Color(0xFFE37400)
@@ -47,10 +48,9 @@ class ConditionItemRenderer : ComponentRenderer<PatientConditionState, Condition
   override fun Render(
     item: PatientConditionState,
     config: ConditionItemConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
+    options: RenderOptions,
   ) {
-    ConditionItemRow(item = item, config = config, modifier = modifier)
+    ConditionItemRow(item = item, config = config, modifier = options.modifier)
   }
 }
 

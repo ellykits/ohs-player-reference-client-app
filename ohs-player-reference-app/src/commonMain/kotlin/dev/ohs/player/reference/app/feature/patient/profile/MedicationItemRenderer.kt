@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.MedicationItemConfig
 import dev.ohs.player.generated.state.PatientMedicationState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 import dev.ohs.player.reference.app.feature.component.common.Chip
 
 class MedicationItemRenderer : ComponentRenderer<PatientMedicationState, MedicationItemConfig> {
@@ -44,10 +45,9 @@ class MedicationItemRenderer : ComponentRenderer<PatientMedicationState, Medicat
   override fun Render(
     item: PatientMedicationState,
     config: MedicationItemConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
+    options: RenderOptions,
   ) {
-    MedicationItemRow(item = item, config = config, modifier = modifier)
+    MedicationItemRow(item = item, config = config, modifier = options.modifier)
   }
 }
 

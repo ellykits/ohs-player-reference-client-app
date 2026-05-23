@@ -54,6 +54,7 @@ import dev.ohs.player.generated.viewtype.ViewTypeCS
 import dev.ohs.player.library.registry.LocalViewRegistry
 import dev.ohs.player.library.registry.componentRenderer
 import dev.ohs.player.library.registry.layoutRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,7 +135,7 @@ fun IpsPatientProfileScreen(patientId: String, onBack: () -> Unit) {
           elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
         ) {
           Box(modifier = Modifier.padding(20.dp)) {
-            headerRenderer.Render(s.patient, onClick = {}, modifier = Modifier)
+            headerRenderer.Render(s.patient, RenderOptions())
           }
         }
       }

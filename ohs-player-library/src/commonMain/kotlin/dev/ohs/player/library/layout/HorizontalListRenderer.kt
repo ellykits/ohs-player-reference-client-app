@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.library.registry.ViewType
 import dev.ohs.player.library.renderer.ConfiguredRenderer
 import dev.ohs.player.library.renderer.LayoutRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 
 /**
  * Renders items horizontally as a `LazyRow`.
@@ -77,7 +78,7 @@ class HorizontalListRenderer<T>(
       horizontalArrangement = Arrangement.spacedBy(itemSpacing),
     ) {
       items(items = items, key = key) { item ->
-        component.Render(item, { onItemClick(item) }, Modifier)
+        component.Render(item, RenderOptions(onClick = { onItemClick(item) }))
       }
     }
   }

@@ -32,16 +32,16 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.TelecomItemConfig
 import dev.ohs.player.generated.state.PatientTelecomState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 
 class TelecomItemRenderer : ComponentRenderer<PatientTelecomState, TelecomItemConfig> {
   @Composable
   override fun Render(
     item: PatientTelecomState,
     config: TelecomItemConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
+    options: RenderOptions,
   ) {
-    TelecomItemRow(item = item, config = config, modifier = modifier)
+    TelecomItemRow(item = item, config = config, modifier = options.modifier)
   }
 }
 

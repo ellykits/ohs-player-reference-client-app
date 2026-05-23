@@ -45,6 +45,7 @@ import dev.ohs.player.generated.viewtype.ViewTypeCS
 import dev.ohs.player.library.registry.LocalViewRegistry
 import dev.ohs.player.library.registry.componentRenderer
 import dev.ohs.player.library.registry.layoutRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,9 +95,7 @@ fun GroupProfileScreen(groupId: String, onBack: () -> Unit, onMemberClick: (Stri
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       s.groupHeader?.let { header ->
-        item(key = "group_header") {
-          headerRenderer.Render(header, onClick = {}, modifier = Modifier)
-        }
+        item(key = "group_header") { headerRenderer.Render(header, RenderOptions()) }
       }
 
       if (s.members.isNotEmpty()) {

@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.ImmunizationItemConfig
 import dev.ohs.player.generated.state.PatientImmunizationState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 import dev.ohs.player.reference.app.feature.component.common.Chip
 
 class ImmunizationItemRenderer :
@@ -45,10 +46,9 @@ class ImmunizationItemRenderer :
   override fun Render(
     item: PatientImmunizationState,
     config: ImmunizationItemConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
+    options: RenderOptions,
   ) {
-    ImmunizationItemRow(item = item, config = config, modifier = modifier)
+    ImmunizationItemRow(item = item, config = config, modifier = options.modifier)
   }
 }
 

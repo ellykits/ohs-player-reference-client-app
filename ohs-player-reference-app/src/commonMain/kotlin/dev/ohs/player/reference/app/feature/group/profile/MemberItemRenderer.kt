@@ -39,18 +39,19 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.MemberItemConfig
 import dev.ohs.player.generated.state.GroupMemberState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 import dev.ohs.player.reference.app.feature.component.common.Chip
 import dev.ohs.player.reference.app.feature.patient.list.calculateAge
 
 class MemberItemRenderer : ComponentRenderer<GroupMemberState, MemberItemConfig> {
   @Composable
-  override fun Render(
-    item: GroupMemberState,
-    config: MemberItemConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
-  ) {
-    MemberItemRow(item = item, config = config, onClick = onClick, modifier = modifier)
+  override fun Render(item: GroupMemberState, config: MemberItemConfig, options: RenderOptions) {
+    MemberItemRow(
+      item = item,
+      config = config,
+      onClick = options.onClick,
+      modifier = options.modifier,
+    )
   }
 }
 

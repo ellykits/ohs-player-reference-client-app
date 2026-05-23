@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.ContactItemConfig
 import dev.ohs.player.generated.state.PatientContactState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 import dev.ohs.player.reference.app.feature.component.common.Chip
 
 class ContactItemRenderer : ComponentRenderer<PatientContactState, ContactItemConfig> {
@@ -41,10 +42,9 @@ class ContactItemRenderer : ComponentRenderer<PatientContactState, ContactItemCo
   override fun Render(
     item: PatientContactState,
     config: ContactItemConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
+    options: RenderOptions,
   ) {
-    ContactItemRow(item = item, config = config, modifier = modifier)
+    ContactItemRow(item = item, config = config, modifier = options.modifier)
   }
 }
 

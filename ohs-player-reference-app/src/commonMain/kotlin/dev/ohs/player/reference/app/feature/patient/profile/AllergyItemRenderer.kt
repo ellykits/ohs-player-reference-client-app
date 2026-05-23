@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.AllergyItemConfig
 import dev.ohs.player.generated.state.PatientAllergyState
 import dev.ohs.player.library.renderer.ComponentRenderer
+import dev.ohs.player.library.renderer.RenderOptions
 import dev.ohs.player.reference.app.feature.component.common.Chip
 
 class AllergyItemRenderer : ComponentRenderer<PatientAllergyState, AllergyItemConfig> {
@@ -44,10 +45,9 @@ class AllergyItemRenderer : ComponentRenderer<PatientAllergyState, AllergyItemCo
   override fun Render(
     item: PatientAllergyState,
     config: AllergyItemConfig,
-    onClick: (() -> Unit)?,
-    modifier: Modifier,
+    options: RenderOptions,
   ) {
-    AllergyItemRow(item = item, config = config, modifier = modifier)
+    AllergyItemRow(item = item, config = config, modifier = options.modifier)
   }
 }
 
