@@ -28,12 +28,19 @@ import dev.ohs.player.library.registry.LocalViewRegistry
 import dev.ohs.player.reference.app.feature.group.list.GroupListScreen
 import dev.ohs.player.reference.app.feature.group.profile.GroupProfileScreen
 import dev.ohs.player.reference.app.feature.patient.profile.IpsPatientProfileScreen
+import dev.ohs.player.reference.app.feature.questionnaire.QuestionnaireWrapperScreen
 
 private const val GROUP_LIST_ROUTE = "groupList"
 private const val GROUP_PROFILE_ROUTE = "groupProfile"
 private const val PATIENT_PROFILE_ROUTE = "patientProfile"
 private const val GROUP_ID_ARG = "groupId"
 private const val PATIENT_ID_ARG = "patientId"
+private const val QUESTIONNAIRE_HOUSEHOLD_ROUTE = "questionnaire/household"
+private const val QUESTIONNAIRE_MEMBER_ROUTE = "questionnaire/member"
+private const val QUESTIONNAIRE_CLINICAL_ROUTE = "questionnaire/clinical"
+private const val QUESTIONNAIRE_IMMUNIZATION_ROUTE = "questionnaire/immunization"
+private const val QUESTIONNAIRE_ALLERGY_ROUTE = "questionnaire/allergy"
+private const val QUESTIONNAIRE_MEDICATION_ROUTE = "questionnaire/medication"
 
 @Composable
 fun App() {
@@ -47,7 +54,8 @@ fun App() {
         // Screen 1: Household list
         composable(GROUP_LIST_ROUTE) {
           GroupListScreen(
-            onGroupClick = { id -> navController.navigate("$GROUP_PROFILE_ROUTE/$id") }
+            onGroupClick = { id -> navController.navigate("$GROUP_PROFILE_ROUTE/$id") },
+            onRegisterHousehold = { navController.navigate(QUESTIONNAIRE_HOUSEHOLD_ROUTE) },
           )
         }
 
@@ -61,6 +69,7 @@ fun App() {
             groupId = groupId,
             onBack = { navController.popBackStack() },
             onMemberClick = { id -> navController.navigate("$PATIENT_PROFILE_ROUTE/$id") },
+            onRegisterMember = { navController.navigate("$QUESTIONNAIRE_MEMBER_ROUTE/$groupId") },
           )
         }
 
@@ -70,7 +79,86 @@ fun App() {
           arguments = listOf(navArgument(PATIENT_ID_ARG) { type = NavType.StringType }),
         ) { back ->
           val patientId = back.arguments?.read { getString(PATIENT_ID_ARG) }.orEmpty()
-          IpsPatientProfileScreen(patientId = patientId, onBack = { navController.popBackStack() })
+          IpsPatientProfileScreen(
+            patientId = patientId,
+            onBack = { navController.popBackStack() },
+            onNavigateToForm = { formKey ->
+              navController.navigate("questionnaire/$formKey/$patientId")
+            },
+          )
+        }
+
+        // Questionnaire: Register household
+        composable(QUESTIONNAIRE_HOUSEHOLD_ROUTE) {
+          QuestionnaireWrapperScreen(
+            formKey = "household",
+            onBack = { navController.popBackStack() },
+          )
+        }
+
+        // Questionnaire: Register household member
+        composable(
+          route = "$QUESTIONNAIRE_MEMBER_ROUTE/{$GROUP_ID_ARG}",
+          arguments = listOf(navArgument(GROUP_ID_ARG) { type = NavType.StringType }),
+        ) { back ->
+          val groupId = back.arguments?.read { getString(GROUP_ID_ARG) }.orEmpty()
+          QuestionnaireWrapperScreen(
+            formKey = "member",
+            contextGroupId = groupId,
+            onBack = { navController.popBackStack() },
+          )
+        }
+
+        // Questionnaire: Record condition / diagnosis
+        composable(
+          route = "$QUESTIONNAIRE_CLINICAL_ROUTE/{$PATIENT_ID_ARG}",
+          arguments = listOf(navArgument(PATIENT_ID_ARG) { type = NavType.StringType }),
+        ) { back ->
+          val patientId = back.arguments?.read { getString(PATIENT_ID_ARG) }.orEmpty()
+          QuestionnaireWrapperScreen(
+            formKey = "clinical",
+            contextPatientId = patientId,
+            onBack = { navController.popBackStack() },
+          )
+        }
+
+        // Questionnaire: Record immunization
+        composable(
+          route = "$QUESTIONNAIRE_IMMUNIZATION_ROUTE/{$PATIENT_ID_ARG}",
+          arguments = listOf(navArgument(PATIENT_ID_ARG) { type = NavType.StringType }),
+        ) { back ->
+          val patientId = back.arguments?.read { getString(PATIENT_ID_ARG) }.orEmpty()
+          QuestionnaireWrapperScreen(
+            formKey = "immunization",
+            contextPatientId = patientId,
+            onBack = { navController.popBackStack() },
+          )
+        }
+
+        // Questionnaire: Record allergy / intolerance
+        composable(
+          route = "$QUESTIONNAIRE_ALLERGY_ROUTE/{$PATIENT_ID_ARG}",
+          arguments = listOf(navArgument(PATIENT_ID_ARG) { type = NavType.StringType }),
+        ) { back ->
+          val patientId = back.arguments?.read { getString(PATIENT_ID_ARG) }.orEmpty()
+          QuestionnaireWrapperScreen(
+            formKey = "allergy",
+            contextPatientId = patientId,
+            onBack = { navController.popBackStack() },
+          )
+        }
+
+        // Questionnaire: Record medication request
+        composable(
+          route = "$QUESTIONNAIRE_MEDICATION_ROUTE/{$PATIENT_ID_ARG}",
+          arguments = listOf(navArgument(PATIENT_ID_ARG) { type = NavType.StringType }),
+        ) { back ->
+          val patientId = back.arguments?.read { getString(PATIENT_ID_ARG) }.orEmpty()
+          QuestionnaireWrapperScreen(
+            formKey = "medication",
+            contextPatientId = patientId,
+            onBack = { navController.popBackStack() },
+          )
         }
       }
     }

@@ -1,0 +1,90 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "member-registration",
+  "status": "active",
+  "title": "Register Household Member",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#memberTemplate"
+          }
+        }
+      ]
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Patient",
+      "id": "memberTemplate",
+      "active": true,
+      "name": [
+        {
+          "_family": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueString": "item.where(linkId='member-family').answer.value.first()"
+              }
+            ]
+          },
+          "_given": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueString": "item.where(linkId='member-given').answer.value.first()"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gender": "unknown",
+      "_gender": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueString": "item.where(linkId='member-gender').answer.value.first().code"
+          }
+        ]
+      },
+      "_birthDate": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueString": "item.where(linkId='member-dob').answer.value.first()"
+          }
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "linkId": "member-given",
+      "text": "First Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "member-family",
+      "text": "Last Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "member-gender",
+      "text": "Gender",
+      "type": "choice",
+      "answerValueSet": "http://hl7.org/fhir/ValueSet/administrative-gender"
+    },
+    {
+      "linkId": "member-dob",
+      "text": "Date of Birth",
+      "type": "date"
+    }
+  ]
+}

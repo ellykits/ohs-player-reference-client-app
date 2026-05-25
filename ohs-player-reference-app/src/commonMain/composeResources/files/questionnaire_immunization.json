@@ -1,0 +1,89 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "immunization",
+  "status": "active",
+  "title": "Record Immunization",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#immunizationTemplate"
+          }
+        }
+      ]
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Immunization",
+      "id": "immunizationTemplate",
+      "status": "completed",
+      "vaccineCode": {
+        "coding": [
+          {
+            "display": "unknown",
+            "_display": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueString": "item.where(linkId='vaccine-name').answer.value.first()"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "patient": {
+        "reference": "placeholder"
+      },
+      "_occurrenceDateTime": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueString": "item.where(linkId='occurrence-date').answer.value.first()"
+          }
+        ]
+      },
+      "note": [
+        {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext",
+              "valueString": "item.where(linkId='immunization-notes').answer.value"
+            }
+          ],
+          "_text": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueString": "first()"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "linkId": "vaccine-name",
+      "text": "Vaccine",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "occurrence-date",
+      "text": "Date Given",
+      "type": "date",
+      "required": true
+    },
+    {
+      "linkId": "immunization-notes",
+      "text": "Notes",
+      "type": "string"
+    }
+  ]
+}

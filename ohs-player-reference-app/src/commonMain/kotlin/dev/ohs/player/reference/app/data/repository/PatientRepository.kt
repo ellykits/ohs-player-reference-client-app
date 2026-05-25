@@ -29,15 +29,9 @@ import dev.ohs.player.reference.app.data.datasource.allPatientIds
 import dev.ohs.player.reference.app.data.datasource.patientProfileSearchResult
 import dev.ohs.player.reference.app.data.datasource.patientSummarySearchResult
 import dev.ohs.player.reference.app.feature.patient.profile.IpsProfileUiState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object PatientRepository {
-
-  // FhirPathEvaluator holds mutable state is not concurrent-safe.
-  // limitedParallelism(1) serializes all extraction on a single background thread without any
-  // explicit locking.
-  private val extractorDispatcher = Dispatchers.Default.limitedParallelism(1)
 
   suspend fun getPatients(): List<PatientSummaryState> =
     withContext(extractorDispatcher) {

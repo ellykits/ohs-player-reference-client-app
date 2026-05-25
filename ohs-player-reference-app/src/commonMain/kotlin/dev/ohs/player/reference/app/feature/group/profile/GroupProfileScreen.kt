@@ -23,8 +23,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +51,12 @@ import dev.ohs.player.library.renderer.RenderOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupProfileScreen(groupId: String, onBack: () -> Unit, onMemberClick: (String) -> Unit) {
+fun GroupProfileScreen(
+  groupId: String,
+  onBack: () -> Unit,
+  onMemberClick: (String) -> Unit,
+  onRegisterMember: () -> Unit,
+) {
   val viewModel = remember(groupId) { GroupProfileViewModel(groupId) }
   val state by viewModel.uiState.collectAsStateWithLifecycle()
   val registry = LocalViewRegistry.current
@@ -79,7 +86,12 @@ fun GroupProfileScreen(groupId: String, onBack: () -> Unit, onMemberClick: (Stri
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
           ),
       )
-    }
+    },
+    floatingActionButton = {
+      FloatingActionButton(onClick = onRegisterMember) {
+        Icon(Icons.Default.Add, contentDescription = "Register Member")
+      }
+    },
   ) { padding ->
     val s = state
     if (s == null) {

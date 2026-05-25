@@ -25,6 +25,7 @@ import dev.ohs.player.generated.state.PatientImmunizationState
 import dev.ohs.player.generated.state.PatientMedicationState
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.generated.state.PatientTelecomState
+import dev.ohs.player.reference.app.data.datasource.SampleDataStore
 import dev.ohs.player.reference.app.data.repository.PatientRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,6 +48,10 @@ class IpsPatientProfileViewModel(patientId: String) : ViewModel() {
   val uiState: StateFlow<IpsProfileUiState?> = _uiState.asStateFlow()
 
   init {
-    viewModelScope.launch { _uiState.value = PatientRepository.getPatientProfile(patientId) }
+    viewModelScope.launch {
+      SampleDataStore.version.collect {
+        _uiState.value = PatientRepository.getPatientProfile(patientId)
+      }
+    }
   }
 }

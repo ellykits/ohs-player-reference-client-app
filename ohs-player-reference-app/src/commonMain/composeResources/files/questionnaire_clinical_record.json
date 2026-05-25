@@ -1,0 +1,105 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "clinical-record",
+  "status": "active",
+  "title": "Record Clinical Data",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#conditionTemplate"
+          }
+        }
+      ]
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Condition",
+      "id": "conditionTemplate",
+      "clinicalStatus": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+            "code": "active",
+            "display": "Active"
+          }
+        ]
+      },
+      "verificationStatus": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+            "code": "confirmed",
+            "display": "Confirmed"
+          }
+        ]
+      },
+      "subject": {
+        "reference": "placeholder"
+      },
+      "code": {
+        "coding": [
+          {
+            "display": "unknown",
+            "_display": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueString": "item.where(linkId='condition-name').answer.value.first()"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "_onsetDateTime": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueString": "item.where(linkId='condition-onset').answer.value.first()"
+          }
+        ]
+      },
+      "note": [
+        {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext",
+              "valueString": "item.where(linkId='condition-notes').answer.value"
+            }
+          ],
+          "_text": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueString": "first()"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "linkId": "condition-name",
+      "text": "Condition / Diagnosis",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "condition-onset",
+      "text": "Onset Date",
+      "type": "date"
+    },
+    {
+      "linkId": "condition-notes",
+      "text": "Clinical Notes",
+      "type": "string"
+    }
+  ]
+}

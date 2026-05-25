@@ -2486,7 +2486,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2513,7 +2514,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "GUAR"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2540,7 +2542,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "FTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2567,7 +2570,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2594,7 +2598,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "FTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2621,7 +2626,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2648,7 +2654,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "FTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2675,7 +2682,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "MTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2702,7 +2710,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2729,7 +2738,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2756,7 +2766,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "FTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2783,7 +2794,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2810,7 +2822,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "FTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2837,7 +2850,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "MTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2864,7 +2878,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "FTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2891,7 +2906,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2918,7 +2934,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "FTH"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2945,7 +2962,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2972,7 +2990,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "SPS"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }
@@ -2999,7 +3018,8 @@
             "coding": [
               {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                "code": "GUAR"
+                "code": "HEAD",
+                "display": "Head of household"
               }
             ]
           }

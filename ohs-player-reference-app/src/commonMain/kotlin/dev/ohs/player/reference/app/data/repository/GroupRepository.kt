@@ -23,14 +23,9 @@ import dev.ohs.player.reference.app.FhirPathEngine.forR4 as engine
 import dev.ohs.player.reference.app.data.datasource.groupListSearchResults
 import dev.ohs.player.reference.app.data.datasource.groupProfileSearchResult
 import dev.ohs.player.reference.app.feature.group.profile.GroupProfileUiState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object GroupRepository {
-
-  // FhirPathEvaluator is not concurrent-safe. limitedParallelism(1) serializes all extraction on a
-  // single background thread without any explicit locking.
-  private val extractorDispatcher = Dispatchers.Default.limitedParallelism(1)
 
   suspend fun getGroups(): List<GroupListState> =
     withContext(extractorDispatcher) {

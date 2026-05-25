@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.ohs.player.generated.state.GroupHeaderState
 import dev.ohs.player.generated.state.GroupMemberState
+import dev.ohs.player.reference.app.data.datasource.SampleDataStore
 import dev.ohs.player.reference.app.data.repository.GroupRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +36,8 @@ class GroupProfileViewModel(groupId: String) : ViewModel() {
   val uiState: StateFlow<GroupProfileUiState?> = _uiState.asStateFlow()
 
   init {
-    viewModelScope.launch { _uiState.value = GroupRepository.getGroupProfile(groupId) }
+    viewModelScope.launch {
+      SampleDataStore.version.collect { _uiState.value = GroupRepository.getGroupProfile(groupId) }
+    }
   }
 }

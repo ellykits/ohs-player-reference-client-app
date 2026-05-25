@@ -1,0 +1,76 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "medication-request",
+  "status": "active",
+  "title": "Record Medication",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#medicationTemplate"
+          }
+        }
+      ]
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "MedicationRequest",
+      "id": "medicationTemplate",
+      "status": "active",
+      "intent": "order",
+      "medicationCodeableConcept": {
+        "coding": [
+          {
+            "display": "unknown",
+            "_display": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueString": "item.where(linkId='medication-name').answer.value.first()"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "subject": {
+        "reference": "placeholder"
+      },
+      "dosageInstruction": [
+        {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext",
+              "valueString": "item.where(linkId='dosage-text').answer.value"
+            }
+          ],
+          "_text": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueString": "first()"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "linkId": "medication-name",
+      "text": "Medication Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "dosage-text",
+      "text": "Dosage Instructions",
+      "type": "string"
+    }
+  ]
+}

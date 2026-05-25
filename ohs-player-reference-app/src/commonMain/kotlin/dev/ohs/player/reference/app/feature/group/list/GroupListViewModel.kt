@@ -18,6 +18,7 @@ package dev.ohs.player.reference.app.feature.group.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.ohs.player.generated.state.GroupListState
+import dev.ohs.player.reference.app.data.datasource.SampleDataStore
 import dev.ohs.player.reference.app.data.repository.GroupRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,8 @@ class GroupListViewModel : ViewModel() {
   val groups: StateFlow<List<GroupListState>?> = _groups.asStateFlow()
 
   init {
-    viewModelScope.launch { _groups.value = GroupRepository.getGroups() }
+    viewModelScope.launch {
+      SampleDataStore.version.collect { _groups.value = GroupRepository.getGroups() }
+    }
   }
 }

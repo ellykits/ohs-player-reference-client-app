@@ -1,0 +1,250 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "household-registration",
+  "status": "active",
+  "title": "Register Household",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "patientRef"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "groupRef"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "rpRef"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractBundle",
+      "valueReference": {
+        "reference": "#householdBundle"
+      }
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Bundle",
+      "id": "householdBundle",
+      "type": "transaction",
+      "entry": [
+        {
+          "_fullUrl": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueString": "%patientRef"
+              }
+            ]
+          },
+          "resource": {
+            "resourceType": "Patient",
+            "active": true,
+            "name": [
+              {
+                "_family": {
+                  "extension": [
+                    {
+                      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                      "valueString": "item.where(linkId='head-family').answer.value.first()"
+                    }
+                  ]
+                },
+                "_given": [
+                  {
+                    "extension": [
+                      {
+                        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                        "valueString": "item.where(linkId='head-given').answer.value.first()"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "telecom": [
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext",
+                    "valueString": "item.where(linkId='head-phone').answer.value"
+                  }
+                ],
+                "system": "phone",
+                "_value": {
+                  "extension": [
+                    {
+                      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                      "valueString": "first()"
+                    }
+                  ]
+                }
+              }
+            ],
+            "gender": "unknown",
+            "_gender": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueString": "item.where(linkId='head-gender').answer.value.first().code"
+                }
+              ]
+            },
+            "_birthDate": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueString": "item.where(linkId='head-dob').answer.value.first()"
+                }
+              ]
+            }
+          },
+          "request": {
+            "method": "POST",
+            "url": "Patient"
+          }
+        },
+        {
+          "_fullUrl": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueString": "%groupRef"
+              }
+            ]
+          },
+          "resource": {
+            "resourceType": "Group",
+            "type": "person",
+            "actual": true,
+            "_name": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueString": "item.where(linkId='household-name').answer.value.first()"
+                }
+              ]
+            },
+            "member": [
+              {
+                "entity": {
+                  "reference": "placeholder",
+                  "_reference": {
+                    "extension": [
+                      {
+                        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                        "valueString": "%patientRef"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "request": {
+            "method": "POST",
+            "url": "Group"
+          }
+        },
+        {
+          "_fullUrl": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueString": "%rpRef"
+              }
+            ]
+          },
+          "resource": {
+            "resourceType": "RelatedPerson",
+            "patient": {
+              "reference": "placeholder",
+              "_reference": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                    "valueString": "%patientRef"
+                  }
+                ]
+              }
+            },
+            "relationship": [
+              {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                    "code": "HEAD",
+                    "display": "Head of household"
+                  }
+                ]
+              }
+            ],
+            "name": [
+              {
+                "_family": {
+                  "extension": [
+                    {
+                      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                      "valueString": "item.where(linkId='head-family').answer.value.first()"
+                    }
+                  ]
+                },
+                "_given": [
+                  {
+                    "extension": [
+                      {
+                        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                        "valueString": "item.where(linkId='head-given').answer.value.first()"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "request": {
+            "method": "POST",
+            "url": "RelatedPerson"
+          }
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "linkId": "household-name",
+      "text": "Household Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "head-given",
+      "text": "Head of Household — First Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "head-family",
+      "text": "Head of Household — Last Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "head-gender",
+      "text": "Gender",
+      "type": "choice",
+      "answerValueSet": "http://hl7.org/fhir/ValueSet/administrative-gender"
+    },
+    {
+      "linkId": "head-dob",
+      "text": "Date of Birth",
+      "type": "date"
+    },
+    {
+      "linkId": "head-phone",
+      "text": "Phone Number",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "allergy-intolerance",
+  "status": "active",
+  "title": "Record Allergy / Intolerance",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#allergyTemplate"
+          }
+        }
+      ]
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "AllergyIntolerance",
+      "id": "allergyTemplate",
+      "clinicalStatus": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+            "code": "active",
+            "display": "Active"
+          }
+        ]
+      },
+      "verificationStatus": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+            "code": "confirmed",
+            "display": "Confirmed"
+          }
+        ]
+      },
+      "code": {
+        "coding": [
+          {
+            "display": "unknown",
+            "_display": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueString": "item.where(linkId='substance-name').answer.value.first()"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "patient": {
+        "reference": "placeholder"
+      },
+      "criticality": "low",
+      "_criticality": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueString": "item.where(linkId='criticality').answer.value.first().code"
+          }
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "linkId": "substance-name",
+      "text": "Substance / Allergen",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "criticality",
+      "text": "Criticality",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/allergy-intolerance-criticality",
+            "code": "low",
+            "display": "Low Risk"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/allergy-intolerance-criticality",
+            "code": "high",
+            "display": "High Risk"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/allergy-intolerance-criticality",
+            "code": "unable-to-assess",
+            "display": "Unable to Assess"
+          }
+        }
+      ]
+    }
+  ]
+}

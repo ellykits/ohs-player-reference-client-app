@@ -58,6 +58,7 @@ kotlin {
     }
     commonMain.dependencies {
       implementation(project(":ohs-player-library"))
+      implementation("dev.ohs.fhir:data-capture:1.3.1-local-alpha01")
       implementation(libs.compose.runtime)
       implementation(libs.compose.foundation)
       implementation(libs.compose.material)
