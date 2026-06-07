@@ -1,0 +1,8 @@
+{
+  "resourceType": "http://ohs.dev/StructureDefinition/ViewConfig",
+  "viewType": "ImmunizationItem",
+  "property": [
+    { "name": "showDate", "type": "boolean", "valueBoolean": true },
+    { "name": "showStatus", "type": "boolean", "valueBoolean": true }
+  ]
+}

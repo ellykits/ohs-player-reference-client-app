@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ohs.player.reference.app
+package dev.ohs.player.library.config
 
-import dev.ohs.fhir.fhirpath.FhirPathEngine
-
-object FhirPathEngine {
-  val forR4 by lazy { FhirPathEngine.forR4() }
+/**
+ * Supplies the raw config Binary documents the [ConfigStore] indexes. This is the only seam an
+ * application must implement: in production it fetches from a backend; the reference app reads
+ * bundled resources. Each returned string is the JSON body of one config Binary.
+ */
+fun interface ConfigSource {
+  suspend fun readAll(): List<String>
 }

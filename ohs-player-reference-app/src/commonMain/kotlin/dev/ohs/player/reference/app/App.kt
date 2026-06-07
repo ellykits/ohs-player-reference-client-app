@@ -27,7 +27,7 @@ import androidx.savedstate.read
 import dev.ohs.player.library.registry.LocalViewRegistry
 import dev.ohs.player.reference.app.feature.group.list.GroupListScreen
 import dev.ohs.player.reference.app.feature.group.profile.GroupProfileScreen
-import dev.ohs.player.reference.app.feature.patient.profile.IpsPatientProfileScreen
+import dev.ohs.player.reference.app.feature.patient.profile.PatientProfileScreen
 
 private const val GROUP_LIST_ROUTE = "groupList"
 private const val GROUP_PROFILE_ROUTE = "groupProfile"
@@ -70,7 +70,7 @@ fun App() {
           arguments = listOf(navArgument(PATIENT_ID_ARG) { type = NavType.StringType }),
         ) { back ->
           val patientId = back.arguments?.read { getString(PATIENT_ID_ARG) }.orEmpty()
-          IpsPatientProfileScreen(patientId = patientId, onBack = { navController.popBackStack() })
+          PatientProfileScreen(patientId = patientId, onBack = { navController.popBackStack() })
         }
       }
     }

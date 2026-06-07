@@ -17,54 +17,30 @@ package dev.ohs.player.codegen.model.fhir
 
 import kotlinx.serialization.Serializable
 
-/** Minimal model for deserializing a Binary ViewDefinition JSON artifact from the IG. */
+/**
+ * Codegen view of a ViewDefinition — only the fields code generation needs to derive the typed state
+ * class: the resource and its column tree. Runtime concerns the generator never reads (`constant`,
+ * `where`, `status`, …) are intentionally omitted; the full SQL-on-FHIR model lives in the library
+ * (`dev.ohs.player.library.config.ViewDefinition`), where extraction uses them. Unknown JSON keys are
+ * ignored on decode.
+ */
 @Serializable
 data class ViewDefinition(
   val resourceType: String = "",
   val name: String,
   val resource: String,
-  val status: String? = null,
-  val constant: List<Constant> = emptyList(),
-  val where: List<WhereClause> = emptyList(),
   val select: List<SelectBlock> = emptyList(),
 ) {
   /**
-   * A named constant accessible in column expressions via `%name` syntax.
-   *
-   * Exactly one `value*` field should be set. The resolved [value] property returns whichever is
-   * non-null.
-   */
-  @Serializable
-  data class Constant(
-    val name: String,
-    val valueString: String? = null,
-    val valueInteger: Int? = null,
-    val valueBoolean: Boolean? = null,
-    val valueDecimal: Double? = null,
-  ) {
-    val value: Any?
-      get() = valueString ?: valueInteger ?: valueBoolean ?: valueDecimal
-  }
-
-  /**
-   * A FHIRPath filter applied to each pivot resource before any column extraction. Resources where
-   * the expression does not evaluate to `true` are skipped. Multiple clauses are AND-ed.
-   */
-  @Serializable data class WhereClause(val path: String)
-
-  /**
-   * A group of columns sharing an optional context path.
-   * - [forEach]: expands one row per element at the given FHIRPath (equivalent to a SQL CROSS JOIN
-   *   LATERAL). Column expressions are evaluated against each element.
-   * - [forEachOrNull]: like [forEach] but emits one null row when the path returns empty (LEFT JOIN
-   *   semantics), so the pivot always contributes at least one output row.
-   * - [unionAll]: each inner [SelectBlock] must produce the same column schema; their rows are
-   *   concatenated. Use when different path shapes map to the same logical columns.
-   * - Plain block (all null / empty): columns evaluated once against the pivot.
+   * One node of the select tree. May carry [column]s, nested [select] nodes, a
+   * [forEach]/[forEachOrNull] re-rooting evaluation at each element of a path, and a [unionAll] of
+   * further select nodes whose rows are concatenated. (Only column names matter for codegen — the flat
+   * state schema is the union of every column in the tree.)
    */
   @Serializable
   data class SelectBlock(
     val column: List<Column> = emptyList(),
+    val select: List<SelectBlock> = emptyList(),
     val forEach: String? = null,
     val forEachOrNull: String? = null,
     val unionAll: List<SelectBlock> = emptyList(),
@@ -85,16 +61,12 @@ data class ViewDefinition(
     val description: String? = null,
   )
 
-  /**
-   * All unique columns across all select blocks, in declaration order. For [SelectBlock.unionAll]
-   * blocks only the first inner block's columns are included (all inner blocks share the same
-   * schema).
-   */
-  fun allColumns(): List<Column> =
-    select.flatMap { block ->
-      when {
-        block.unionAll.isNotEmpty() -> block.unionAll.first().column
-        else -> block.column
-      }
-    }
+  /** Every column the view can produce, walking the whole select tree (unionAll branches share a schema). */
+  fun allColumns(): List<Column> = select.flatMap { it.collectColumns() }
+
+  private fun SelectBlock.collectColumns(): List<Column> = buildList {
+    addAll(column)
+    select.forEach { addAll(it.collectColumns()) }
+    unionAll.firstOrNull()?.let { addAll(it.collectColumns()) }
+  }
 }

@@ -104,9 +104,48 @@ android {
 }
 
 igCodegen {
-  // igDir resolves automatically: gradle property ohs.ig.dir → local.properties ohs.ig.dir
+  // sourcesDir defaults to src/commonMain/composeResources/files (the bundled runtime config).
   packageName = "dev.ohs.player.generated"
 }
+
+// Auto-generate the runtime config manifest from the bundled config directory, so it never drifts.
+// Compose resources can't enumerate a directory at runtime, so LocalConfigSource reads this list.
+val generateConfigManifest by
+  tasks.registering {
+    val configDir = layout.projectDirectory.dir("src/commonMain/composeResources/files/states")
+    val manifest = configDir.file("manifest.txt")
+    inputs.files(fileTree(configDir) { include("Binary-*.json") })
+    outputs.file(manifest)
+    doLast {
+      val names =
+        configDir.asFile
+          .listFiles { f -> f.isFile && f.name.startsWith("Binary-") && f.extension == "json" }
+          ?.map { it.name }
+          ?.sorted()
+          .orEmpty()
+      manifest.asFile.writeText(names.joinToString("\n") + "\n")
+    }
+  }
+
+// Every task that reads the bundled config directory must run after the manifest is written.
+val configManifestConsumers =
+  listOf(
+    "prepareComposeResourcesTask",
+    "convertXmlValueResources",
+    "copyNonXmlValueResources",
+    "generateResourceAccessors",
+    "generateActualResourceCollectors",
+    "generateExpectResourceCollectors",
+    "generateComposeResClass",
+    "generateIgCode",
+  )
+
+tasks
+  .matching { task ->
+    configManifestConsumers.any { task.name.startsWith(it) } ||
+      task.name.endsWith("ProcessResources")
+  }
+  .configureEach { dependsOn(generateConfigManifest) }
 
 dependencies { debugImplementation(libs.compose.uiTooling) }
 

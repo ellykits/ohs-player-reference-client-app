@@ -36,7 +36,7 @@ class PatientProfileScreenTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme { IpsPatientProfileScreen(patientId = "p1", onBack = {}) }
+        MaterialTheme { PatientProfileScreen(patientId = "p1", onBack = {}) }
       }
     }
 

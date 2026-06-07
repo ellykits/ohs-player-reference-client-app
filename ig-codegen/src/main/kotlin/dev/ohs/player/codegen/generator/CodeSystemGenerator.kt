@@ -21,11 +21,9 @@ import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
 /**
- * Generates a Kotlin `object` from a FHIR [CodeSystem].
- *
- * Two modes are selected automatically based on the CodeSystem id:
- * - **Search-scope** (`id` contains `search-scope`): codes emitted as `const val String`
- * - **View-type** (`id` contains `view-type`): codes emitted as `val ViewType(…)`
+ * Generates a view-type constants object from a [CodeSystem]. Each concept becomes a `ViewType`
+ * property named after its code (e.g. `val PatientHeader = ViewType("PatientHeader")`); the object is
+ * named after the CodeSystem (e.g. `ViewTypeCS`).
  */
 class CodeSystemGenerator(
   private val basePackage: String,
@@ -35,50 +33,28 @@ class CodeSystemGenerator(
 
   private val viewTypeClass = ClassName("dev.ohs.player.library.registry", "ViewType")
 
-  fun generate(cs: CodeSystem) {
-    val pkg = "$basePackage.$subPackage"
-    val objectName = cs.name // e.g. "SearchScopeCS", "ViewTypeCS"
-    val isSearchScope = cs.id.contains("search-scope", ignoreCase = true)
-
+  fun generate(codeSystem: CodeSystem) {
     val kdoc =
       buildString {
-          cs.title?.let { append(it).append(".\n") }
-          cs.description?.let { append("\n").append(it) }
+          codeSystem.title?.let { append(it).append(".\n") }
+          codeSystem.description?.let { append("\n").append(it) }
         }
         .trim()
 
-    val objectBuilder = TypeSpec.objectBuilder(objectName).addKdoc(kdoc)
-
-    cs.concept.forEach { concept ->
-      val propName = concept.code
-      val displayDoc = concept.display?.let { "[$it]" } ?: concept.code
-
-      if (isSearchScope) {
-        // const val ROOT = "root"
-        objectBuilder.addProperty(
-          PropertySpec.builder(propName.toScreamingSnakeCase(), String::class, KModifier.CONST)
-            .initializer("%S", concept.code)
-            .addKdoc(displayDoc)
-            .build()
-        )
-      } else {
-        // val PatientCard = ViewType("PatientCard")
-        objectBuilder.addProperty(
-          PropertySpec.builder(propName, viewTypeClass)
-            .initializer("%T(%S)", viewTypeClass, concept.code)
-            .addKdoc(displayDoc)
-            .build()
-        )
-      }
+    val objectBuilder = TypeSpec.objectBuilder(codeSystem.name).addKdoc(kdoc)
+    codeSystem.concept.forEach { concept ->
+      objectBuilder.addProperty(
+        PropertySpec.builder(concept.code, viewTypeClass)
+          .initializer("%T(%S)", viewTypeClass, concept.code)
+          .addKdoc(concept.display ?: concept.code)
+          .build()
+      )
     }
 
-    FileSpec.builder(pkg, objectName)
-      .addFileComment("Generated from CodeSystem/${cs.id}. Do not edit manually.")
+    FileSpec.builder("$basePackage.$subPackage", codeSystem.name)
+      .addFileComment("Generated from CodeSystem/${codeSystem.id}. Do not edit manually.")
       .addType(objectBuilder.build())
       .build()
       .writeFormattedTo(outputDir)
   }
-
-  private fun String.toScreamingSnakeCase(): String =
-    replace(Regex("([a-z])([A-Z])"), "$1_$2").uppercase()
 }

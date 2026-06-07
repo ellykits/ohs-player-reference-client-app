@@ -1,0 +1,13 @@
+Binary-AllergyItemConfig.json
+Binary-AllergyReactionItemConfig.json
+Binary-ConditionItemConfig.json
+Binary-ContactItemConfig.json
+Binary-GroupCardConfig.json
+Binary-GroupHeaderConfig.json
+Binary-ImmunizationItemConfig.json
+Binary-MedicationItemConfig.json
+Binary-MemberItemConfig.json
+Binary-PatientCardConfig.json
+Binary-PatientHeaderConfig.json
+Binary-SectionCardConfig.json
+Binary-TelecomItemConfig.json

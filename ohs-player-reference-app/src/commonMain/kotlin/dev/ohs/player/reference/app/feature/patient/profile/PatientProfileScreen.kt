@@ -58,7 +58,7 @@ import dev.ohs.player.library.renderer.RenderOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IpsPatientProfileScreen(patientId: String, onBack: () -> Unit) {
+fun PatientProfileScreen(patientId: String, onBack: () -> Unit) {
   val viewModel = remember(patientId) { IpsPatientProfileViewModel(patientId) }
   val state by viewModel.uiState.collectAsStateWithLifecycle()
   val registry = LocalViewRegistry.current

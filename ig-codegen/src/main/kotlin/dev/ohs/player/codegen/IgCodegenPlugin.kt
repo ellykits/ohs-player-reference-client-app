@@ -15,15 +15,13 @@
  */
 package dev.ohs.player.codegen
 
-import java.io.FileInputStream
-import java.util.Properties
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.TaskProvider
 
 /**
- * Gradle plugin that generates Kotlin source code from a FHIR Implementation Guide.
+ * Gradle plugin that generates typed Kotlin source from runtime config Binaries.
  *
  * Apply via:
  * ```kotlin
@@ -32,12 +30,10 @@ import org.gradle.api.tasks.TaskProvider
  *
  * The plugin:
  * 1. Registers the [IgCodegenTask] under the name `generateIgCode`.
- * 2. Resolves the IG directory from (in order):
- *     - Gradle property `ohs.ig.dir` (set via `-Pohs.ig.dir=…` or `gradle.properties`)
- *     - `local.properties` key `ohs.ig.dir`
- *     - Fails with a clear error if neither is set.
- * 3. Wires the output directory into the KMP `commonMain` source set so generated sources are
- *    compiled automatically.
+ * 2. Reads `Binary-*.json` from [IgCodegenExtension.sourcesDir] (default
+ *    `src/commonMain/composeResources/files`) — the implementer's own config artifacts, not the IG.
+ * 3. Wires the output directory into the KMP `commonMain` source set so generated sources compile
+ *    automatically.
  */
 class IgCodegenPlugin : Plugin<Project> {
 
@@ -50,8 +46,12 @@ class IgCodegenPlugin : Plugin<Project> {
     project.afterEvaluate {
       generateTask.configure {
         it.group = "codegen"
-        it.description = "Generates Kotlin source from FHIR IG artifacts."
-        it.igDir.set(extension.igDir.orElse(resolveIgDir(project)))
+        it.description = "Generates Kotlin source from runtime config Binaries."
+        it.sourcesDir.set(
+          extension.sourcesDir.orElse(
+            project.layout.projectDirectory.dir("src/commonMain/composeResources/files")
+          )
+        )
         it.packageName.set(extension.packageName)
         it.outputDir.set(
           project.layout.buildDirectory.dir("generated/ig-codegen/commonMain/kotlin")
@@ -112,25 +112,5 @@ class IgCodegenPlugin : Plugin<Project> {
 
       kotlinSrcSet.srcDir(generateTask.flatMap { it.outputDir })
     }
-  }
-
-  private fun resolveIgDir(project: Project): String {
-    project.findProperty("ohs.ig.dir")?.toString()?.let {
-      return it
-    }
-
-    val localPropsFile = project.rootProject.file("local.properties")
-    if (localPropsFile.exists()) {
-      val props = Properties()
-      FileInputStream(localPropsFile).use { props.load(it) }
-      props.getProperty("ohs.ig.dir")?.let {
-        return it
-      }
-    }
-
-    error(
-      "ig-codegen: 'ohs.ig.dir' is not set. " +
-        "Add it to local.properties or pass -Pohs.ig.dir=<path> on the command line."
-    )
   }
 }

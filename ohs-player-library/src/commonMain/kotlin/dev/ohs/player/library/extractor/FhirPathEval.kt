@@ -17,25 +17,27 @@ package dev.ohs.player.library.extractor
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import dev.ohs.fhir.fhirpath.FhirPathEngine
+import dev.ohs.fhir.fhirpath.types.FhirPathDate
+import dev.ohs.fhir.fhirpath.types.FhirPathDateTime
+import dev.ohs.fhir.fhirpath.types.FhirPathTime
 import dev.ohs.fhir.model.r4.FhirDate
 import dev.ohs.fhir.model.r4.FhirDateTime
 
 /**
  * Lightweight wrapper around a single FHIRPath evaluation result.
  *
- * Provides typed accessors for all common output types so generated extractors can read values
- * without repetitive null/cast boilerplate.
+ * The engine returns scalars as Kotlin types (`Boolean`, `String`, `BigDecimal`, …) and date/time
+ * values as its own `FhirPathDate`/`FhirPathDateTime`/`FhirPathTime` types. These accessors
+ * normalise both so callers read a value without casts.
  */
 class EvalResult(val raw: Any?) {
   val str: String?
     get() =
       when (raw) {
-        is dev.ohs.fhir.model.r4.Date -> raw.value?.toString()
-        is dev.ohs.fhir.model.r4.DateTime -> raw.value?.toString()
-        is dev.ohs.fhir.model.r4.Time -> raw.value?.toString()
-        is FhirDate -> raw.toString()
-        is FhirDateTime -> raw.toString()
         null -> null
+        is FhirPathDate -> raw.toFhirString()
+        is FhirPathDateTime -> raw.toFhirString()
+        is FhirPathTime -> raw.toFhirString()
         else -> raw.toString()
       }
 
@@ -48,20 +50,53 @@ class EvalResult(val raw: Any?) {
   val long: Long?
     get() = (raw as? Number)?.toLong()
 
-  val float: Float?
-    get() = (raw as? Number)?.toFloat()
-
-  val double: Double?
-    get() = (raw as? Number)?.toDouble()
-
   val decimal: BigDecimal?
     get() = raw as? BigDecimal
 
   val date: FhirDate?
-    get() = raw as? FhirDate
+    get() =
+      when (raw) {
+        is FhirDate -> raw
+        is FhirPathDate -> FhirDate.fromString(raw.toFhirString())
+        else -> null
+      }
 
   val dateTime: FhirDateTime?
-    get() = raw as? FhirDateTime
+    get() =
+      when (raw) {
+        is FhirDateTime -> raw
+        is FhirPathDateTime -> FhirDateTime.fromString(raw.toFhirString())
+        else -> null
+      }
+}
+
+private fun Int.pad2(): String = toString().padStart(2, '0')
+
+/** Renders a [FhirPathDate] as a FHIR `date` string (`YYYY`, `YYYY-MM`, or `YYYY-MM-DD`). */
+private fun FhirPathDate.toFhirString(): String = buildString {
+  append(year.toString().padStart(4, '0'))
+  month?.let { append('-').append(it.pad2()) }
+  day?.let { append('-').append(it.pad2()) }
+}
+
+/** Renders a [FhirPathTime] as a FHIR `time` string (`HH:MM:SS`). */
+private fun FhirPathTime.toFhirString(): String = buildString {
+  append(hour.pad2())
+  append(':').append((minute ?: 0).pad2())
+  append(':').append((second ?: 0.0).toInt().pad2())
+}
+
+/** Renders a [FhirPathDateTime] as a FHIR `dateTime` string, preserving its precision. */
+private fun FhirPathDateTime.toFhirString(): String = buildString {
+  append(year.toString().padStart(4, '0'))
+  month?.let { append('-').append(it.pad2()) }
+  day?.let { append('-').append(it.pad2()) }
+  hour?.let { h ->
+    append('T').append(h.pad2())
+    append(':').append((minute ?: 0).pad2())
+    second?.let { append(':').append(it.toInt().pad2()) }
+    utcOffset?.let { append(it.toString()) }
+  }
 }
 
 /**

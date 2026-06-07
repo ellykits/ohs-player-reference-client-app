@@ -17,37 +17,41 @@ package dev.ohs.player.codegen
 
 import dev.ohs.player.codegen.generator.BinaryGenerator
 import dev.ohs.player.codegen.generator.CodeSystemGenerator
-import dev.ohs.player.codegen.generator.StructureDefinitionGenerator
+import dev.ohs.player.codegen.generator.ConfigBinaryGenerator
+import dev.ohs.player.codegen.model.ViewConfigDefinition
 import dev.ohs.player.codegen.model.ViewJoinMap
 import dev.ohs.player.codegen.model.fhir.CodeSystem
-import dev.ohs.player.codegen.model.fhir.StructureDefinition
 import dev.ohs.player.codegen.model.fhir.ViewDefinition
 import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
- * Gradle task that reads FHIR IG artifacts from [igDir] and writes generated Kotlin source files to
- * [outputDir].
+ * Gradle task that generates Kotlin source from runtime config Binaries.
  *
- * Sub-package routing is fixed by convention:
- * - CodeSystems whose id contains `view-type` → `viewtype`
- * - Logical StructureDefinitions whose name ends in `Config` → `config`
- * - Other logical StructureDefinitions → `spec`
+ * Every `Binary-*.json` under [sourcesDir] is routed by its top-level `resourceType` — the same
+ * discriminator the runtime `ConfigStore` uses — and turned into typed code:
+ * - **ViewDefinition** → columns feeding state generation
+ * - **ViewJoinMap** → a `@Serializable` state data class in the `state` package
+ * - **ViewConfig** → a `@Serializable` config data class in the `config` package
+ * - **CodeSystem** → a view-type constants object in the `viewtype` package
  *
- * Two definitions are always skipped:
- * - `ViewJoinMap` — hand-coded in the library (`dev.ohs.player.library.model`)
- * - `ViewDefinition` — recursive BackboneElement structure; managed manually in the library
- *
- * Annotated with [@CacheableTask] so Gradle can skip execution when inputs are unchanged.
+ * The task does not read the IG: the IG is the blueprint (it defines these shapes and ships examples),
+ * while the artifacts consumed here are the implementer's own, provided wherever they choose to store
+ * them.
  */
 @CacheableTask
 abstract class IgCodegenTask : DefaultTask() {
 
-  /** Path to the `fsh-generated/resources/` directory of the compiled IG. */
-  @get:Input abstract val igDir: Property<String>
+  /** Directory tree of runtime config `Binary-*.json` files (e.g. the app's bundled config). */
+  @get:InputDirectory
+  @get:PathSensitive(PathSensitivity.RELATIVE)
+  abstract val sourcesDir: DirectoryProperty
 
   /** Root Kotlin package for all emitted files (e.g. `dev.ohs.player.generated`). */
   @get:Input abstract val packageName: Property<String>
@@ -57,10 +61,9 @@ abstract class IgCodegenTask : DefaultTask() {
 
   @TaskAction
   fun generate() {
-    val resourcesDir = File(igDir.get())
-    require(resourcesDir.isDirectory) {
-      "ig-codegen: igDir '${resourcesDir.absolutePath}' is not a directory. " +
-        "Set 'ohs.ig.dir' in gradle.properties or local.properties."
+    val sourcesRoot = sourcesDir.get().asFile
+    require(sourcesRoot.isDirectory) {
+      "ig-codegen: sourcesDir '${sourcesRoot.absolutePath}' is not a directory."
     }
 
     val outDir = outputDir.get().asFile
@@ -69,105 +72,57 @@ abstract class IgCodegenTask : DefaultTask() {
 
     val pkg = packageName.get()
 
-    // Load all logical StructureDefinitions for parent-chain field inheritance
-    val allStructDefs =
-      resourcesDir
-        .listFiles { f -> f.name.startsWith("StructureDefinition-") && f.extension == "json" }
-        ?.mapNotNull { file ->
-          runCatching { json.decodeFromString<StructureDefinition>(file.readText()) }
-            .getOrNull()
-            ?.takeIf { it.kind == "logical" }
-        } ?: emptyList()
+    // Pair each Binary file with its parsed JSON once, so routing reads resourceType cheaply.
+    val binaries =
+      sourcesRoot
+        .walkTopDown()
+        .filter { it.isFile && it.name.startsWith("Binary-") && it.extension == "json" }
+        .mapNotNull { file -> runCatching { json.parseToJsonElement(file.readText()).jsonObject }.getOrNull() }
+        .toList()
 
-    val structDefById = allStructDefs.associateBy { it.id }
+    fun JsonObject.resourceType(): String? = this["resourceType"]?.jsonPrimitive?.content
 
-    // Generate CodeSystems
-    resourcesDir
-      .listFiles { f -> f.name.startsWith("CodeSystem-") && f.extension == "json" }
-      ?.forEach { file ->
-        val cs =
-          runCatching { json.decodeFromString<CodeSystem>(file.readText()) }
-            .getOrElse {
-              logger.warn("ig-codegen: failed to parse ${file.name}: ${it.message}")
-              return@forEach
-            }
-        val subPkg =
-          routeCodeSystem(cs)
-            ?: run {
-              logger.info("ig-codegen: skipping CodeSystem '${cs.id}' (no routing match)")
-              return@forEach
-            }
-        CodeSystemGenerator(pkg, subPkg, outDir).generate(cs)
-        logger.lifecycle("ig-codegen: generated CodeSystem → ${cs.name}")
-      }
-
-    // Load Binary ViewDefinition artifacts (keyed by name)
-    val binaryFiles =
-      resourcesDir.listFiles { f -> f.name.startsWith("Binary-") && f.extension == "json" }
-        ?: emptyArray()
-
-    val binaryViewDefs =
-      binaryFiles
-        .mapNotNull { file ->
-          runCatching {
-              val vd = json.decodeFromString<ViewDefinition>(file.readText())
-              vd.takeIf {
-                it.resourceType == "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition"
-              }
-            }
-            .getOrNull()
-        }
+    // ViewDefinitions provide the columns; index them by name for the state generator.
+    val viewDefs =
+      binaries
+        .filter { it.resourceType() == VIEW_DEFINITION }
+        .map { json.decodeFromJsonElement(ViewDefinition.serializer(), it) }
         .associateBy { it.name }
 
-    // Generate state classes + extractors from Binary ViewJoinMap artifacts
-    val binaryGen = BinaryGenerator(pkg, outDir, binaryViewDefs)
-    binaryFiles.forEach { file ->
-      val map =
-        runCatching {
-            val vjm = json.decodeFromString<ViewJoinMap>(file.readText())
-            vjm.takeIf { it.resourceType == "http://ohs.dev/StructureDefinition/ViewJoinMap" }
-          }
-          .getOrNull() ?: return@forEach
-      binaryGen.generate(map)
-      logger.lifecycle("ig-codegen: generated state+extractor → ${map.name}")
-    }
+    // ViewJoinMap → state class.
+    val binaryGen = BinaryGenerator(pkg, outDir, viewDefs)
+    binaries
+      .filter { it.resourceType() == VIEW_JOIN_MAP }
+      .map { json.decodeFromJsonElement(ViewJoinMap.serializer(), it) }
+      .forEach { map ->
+        binaryGen.generate(map)
+        logger.lifecycle("ig-codegen: generated state → ${map.name}")
+      }
 
-    // Generate StructureDefinitions
-    allStructDefs.forEach { sd ->
-      val subPkg =
-        routeStructDef(sd)
-          ?: run {
-            logger.info("ig-codegen: skipping StructureDefinition '${sd.id}'")
-            return@forEach
-          }
-      StructureDefinitionGenerator(pkg, subPkg, outDir, structDefById).generate(sd)
-      logger.lifecycle("ig-codegen: generated StructureDefinition → ${sd.name}")
-    }
+    // ViewConfig → config class.
+    val configGen = ConfigBinaryGenerator(pkg, outDir)
+    binaries
+      .filter { it.resourceType() == VIEW_CONFIG }
+      .map { json.decodeFromJsonElement(ViewConfigDefinition.serializer(), it) }
+      .forEach { def ->
+        configGen.generate(def)
+        logger.lifecycle("ig-codegen: generated config → ${def.viewType}")
+      }
+
+    // CodeSystem → view-type constants.
+    val codeSystemGen = CodeSystemGenerator(pkg, "viewtype", outDir)
+    binaries
+      .filter { it.resourceType() == "CodeSystem" }
+      .map { json.decodeFromJsonElement(CodeSystem.serializer(), it) }
+      .forEach { cs ->
+        codeSystemGen.generate(cs)
+        logger.lifecycle("ig-codegen: generated view types → ${cs.name}")
+      }
   }
 
-  /**
-   * Determines the sub-package for a [CodeSystem] based on its id.
-   *
-   * Returns `null` to skip the CodeSystem entirely. `search-scope` is omitted — 'SearchScope' is
-   * hand-coded in the library.
-   */
-  private fun routeCodeSystem(cs: CodeSystem): String? =
-    when {
-      cs.id.contains("view-type", ignoreCase = true) -> "viewtype"
-      else -> null
-    }
-
-  /**
-   * Determines the sub-package for a logical [StructureDefinition] based on its name.
-   *
-   * Returns `null` to skip the definition entirely. Skipped definitions:
-   * - `ViewJoinMap` — hand-coded in the library (`dev.ohs.player.library.model`)
-   * - `ViewDefinition` — recursive BackboneElement structure, authored manually in the library
-   */
-  private fun routeStructDef(sd: StructureDefinition): String? =
-    when (sd.id) {
-      "ViewJoinMap",
-      "ViewDefinition" -> null // hand-coded in library
-      else -> if (sd.name.endsWith("Config")) "config" else "spec"
-    }
+  private companion object {
+    const val VIEW_DEFINITION = "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition"
+    const val VIEW_JOIN_MAP = "http://ohs.dev/StructureDefinition/ViewJoinMap"
+    const val VIEW_CONFIG = "http://ohs.dev/StructureDefinition/ViewConfig"
+  }
 }

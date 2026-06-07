@@ -15,20 +15,19 @@
  */
 package dev.ohs.player.reference.app.data.repository
 
-import dev.ohs.player.generated.extractor.AllergyReactionExtractor
-import dev.ohs.player.generated.extractor.PatientAllergyExtractor
-import dev.ohs.player.generated.extractor.PatientConditionExtractor
-import dev.ohs.player.generated.extractor.PatientContactExtractor
-import dev.ohs.player.generated.extractor.PatientImmunizationExtractor
-import dev.ohs.player.generated.extractor.PatientMedicationExtractor
-import dev.ohs.player.generated.extractor.PatientSummaryExtractor
-import dev.ohs.player.generated.extractor.PatientTelecomExtractor
+import dev.ohs.player.generated.state.AllergyReactionState
+import dev.ohs.player.generated.state.PatientAllergyState
+import dev.ohs.player.generated.state.PatientConditionState
+import dev.ohs.player.generated.state.PatientContactState
+import dev.ohs.player.generated.state.PatientImmunizationState
+import dev.ohs.player.generated.state.PatientMedicationState
 import dev.ohs.player.generated.state.PatientSummaryState
-import dev.ohs.player.reference.app.FhirPathEngine.forR4 as engine
+import dev.ohs.player.generated.state.PatientTelecomState
+import dev.ohs.player.reference.app.data.Extraction.extractor
 import dev.ohs.player.reference.app.data.datasource.allPatientIds
 import dev.ohs.player.reference.app.data.datasource.patientProfileSearchResult
 import dev.ohs.player.reference.app.data.datasource.patientSummarySearchResult
-import dev.ohs.player.reference.app.feature.patient.profile.IpsProfileUiState
+import dev.ohs.player.reference.app.feature.patient.profile.ProfileUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -43,27 +42,26 @@ object PatientRepository {
     withContext(extractorDispatcher) {
       allPatientIds().mapNotNull { id ->
         patientSummarySearchResult(id)?.let {
-          PatientSummaryExtractor.extract(engine, it).firstOrNull()
+          extractor.extract<PatientSummaryState>(it).firstOrNull()
         }
       }
     }
 
-  suspend fun getPatientProfile(patientId: String): IpsProfileUiState =
+  suspend fun getPatientProfile(patientId: String): ProfileUiState =
     withContext(extractorDispatcher) {
-      val result = patientProfileSearchResult(patientId) ?: return@withContext IpsProfileUiState()
-      IpsProfileUiState(
-        patient = PatientSummaryExtractor.extract(engine, result).firstOrNull(),
-        allergies = PatientAllergyExtractor.extract(engine, result),
-        allergyReactions = AllergyReactionExtractor.extract(engine, result),
-        medications = PatientMedicationExtractor.extract(engine, result),
-        conditions = PatientConditionExtractor.extract(engine, result),
-        immunizations = PatientImmunizationExtractor.extract(engine, result),
+      val result = patientProfileSearchResult(patientId) ?: return@withContext ProfileUiState()
+      ProfileUiState(
+        patient = extractor.extract<PatientSummaryState>(result).firstOrNull(),
+        allergies = extractor.extract<PatientAllergyState>(result),
+        allergyReactions = extractor.extract<AllergyReactionState>(result),
+        medications = extractor.extract<PatientMedicationState>(result),
+        conditions = extractor.extract<PatientConditionState>(result),
+        immunizations = extractor.extract<PatientImmunizationState>(result),
         contacts =
-          PatientContactExtractor.extract(engine, result).filter {
+          extractor.extract<PatientContactState>(result).filter {
             it.contactGivenName != null || it.contactFamilyName != null
           },
-        telecoms =
-          PatientTelecomExtractor.extract(engine, result).filter { it.telecomValue != null },
+        telecoms = extractor.extract<PatientTelecomState>(result).filter { it.telecomValue != null },
       )
     }
 }

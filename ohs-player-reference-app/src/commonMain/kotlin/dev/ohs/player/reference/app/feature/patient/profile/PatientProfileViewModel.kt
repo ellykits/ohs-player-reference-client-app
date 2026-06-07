@@ -17,34 +17,15 @@ package dev.ohs.player.reference.app.feature.patient.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.ohs.player.generated.state.AllergyReactionState
-import dev.ohs.player.generated.state.PatientAllergyState
-import dev.ohs.player.generated.state.PatientConditionState
-import dev.ohs.player.generated.state.PatientContactState
-import dev.ohs.player.generated.state.PatientImmunizationState
-import dev.ohs.player.generated.state.PatientMedicationState
-import dev.ohs.player.generated.state.PatientSummaryState
-import dev.ohs.player.generated.state.PatientTelecomState
 import dev.ohs.player.reference.app.data.repository.PatientRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class IpsProfileUiState(
-  val patient: PatientSummaryState? = null,
-  val allergies: List<PatientAllergyState> = emptyList(),
-  val allergyReactions: List<AllergyReactionState> = emptyList(),
-  val medications: List<PatientMedicationState> = emptyList(),
-  val conditions: List<PatientConditionState> = emptyList(),
-  val immunizations: List<PatientImmunizationState> = emptyList(),
-  val contacts: List<PatientContactState> = emptyList(),
-  val telecoms: List<PatientTelecomState> = emptyList(),
-)
-
 class IpsPatientProfileViewModel(patientId: String) : ViewModel() {
-  private val _uiState = MutableStateFlow<IpsProfileUiState?>(null)
-  val uiState: StateFlow<IpsProfileUiState?> = _uiState.asStateFlow()
+  private val _uiState = MutableStateFlow<ProfileUiState?>(null)
+  val uiState: StateFlow<ProfileUiState?> = _uiState.asStateFlow()
 
   init {
     viewModelScope.launch { _uiState.value = PatientRepository.getPatientProfile(patientId) }

@@ -16,19 +16,16 @@
 package dev.ohs.player.codegen
 
 import javax.inject.Inject
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 
 /**
- * DSL extension for configuring the IG codegen Gradle plugin.
- *
- * Sub-package routing is fixed by convention — no configuration required:
- * - **`viewtype`** — CodeSystems whose id contains `view-type`
- * - **`spec`** — CodeSystems whose id contains `search-scope`, plus non-config StructureDefinitions
- * - **`config`** — Logical StructureDefinitions whose name ends in `Config`
+ * DSL extension for the IG codegen plugin.
  *
  * ```kotlin
  * igCodegen {
+ *     // sourcesDir defaults to src/commonMain/composeResources/files
  *     packageName = "dev.ohs.player.generated"
  * }
  * ```
@@ -36,29 +33,13 @@ import org.gradle.api.provider.Property
 abstract class IgCodegenExtension @Inject constructor(objects: ObjectFactory) {
 
   /**
-   * Absolute path to the `fsh-generated/resources/` directory of the IG.
-   *
-   * Resolution order:
-   * 1. Gradle property `ohs.ig.dir` (set via `-Pohs.ig.dir=…` or `gradle.properties`)
-   * 2. `local.properties` key `ohs.ig.dir`
-   *
-   * Build fails with a clear error if neither is set.
+   * Directory tree of runtime config `Binary-*.json` files codegen reads (ViewDefinition, ViewJoinMap,
+   * ViewConfig, view-type CodeSystem). These are the implementer's own artifacts — not the IG, which
+   * only ships examples. Defaults to the project's `src/commonMain/composeResources/files`.
    */
-  val igDir: Property<String> = objects.property(String::class.java)
+  val sourcesDir: DirectoryProperty = objects.directoryProperty()
 
-  /**
-   * Future: URL pointing to a published FHIR package (e.g.
-   * `https://packages.fhir.org/dev.ohs.ohs-player-config-ig/0.1.0`). When set the plugin will
-   * download and unpack the package instead of reading from [igDir]. Not yet implemented — the
-   * property is reserved for forward-compatibility.
-   */
-  val igPackageUrl: Property<String> = objects.property(String::class.java)
-
-  /**
-   * Root Kotlin package for all generated sources.
-   *
-   * Defaults to `dev.ohs.player.generated`.
-   */
+  /** Root Kotlin package for all generated sources. Defaults to `dev.ohs.player.generated`. */
   val packageName: Property<String> =
     objects.property(String::class.java).apply { convention("dev.ohs.player.generated") }
 }

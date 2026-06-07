@@ -15,11 +15,10 @@
  */
 package dev.ohs.player.reference.app.data.repository
 
-import dev.ohs.player.generated.extractor.GroupHeaderExtractor
-import dev.ohs.player.generated.extractor.GroupListExtractor
-import dev.ohs.player.generated.extractor.GroupMemberExtractor
+import dev.ohs.player.generated.state.GroupHeaderState
 import dev.ohs.player.generated.state.GroupListState
-import dev.ohs.player.reference.app.FhirPathEngine.forR4 as engine
+import dev.ohs.player.generated.state.GroupMemberState
+import dev.ohs.player.reference.app.data.Extraction.extractor
 import dev.ohs.player.reference.app.data.datasource.groupListSearchResults
 import dev.ohs.player.reference.app.data.datasource.groupProfileSearchResult
 import dev.ohs.player.reference.app.feature.group.profile.GroupProfileUiState
@@ -34,15 +33,15 @@ object GroupRepository {
 
   suspend fun getGroups(): List<GroupListState> =
     withContext(extractorDispatcher) {
-      groupListSearchResults().flatMap { GroupListExtractor.extract(engine, it) }
+      groupListSearchResults().flatMap { extractor.extract<GroupListState>(it) }
     }
 
   suspend fun getGroupProfile(groupId: String): GroupProfileUiState =
     withContext(extractorDispatcher) {
       val result = groupProfileSearchResult(groupId) ?: return@withContext GroupProfileUiState()
       GroupProfileUiState(
-        groupHeader = GroupHeaderExtractor.extract(engine, result).firstOrNull(),
-        members = GroupMemberExtractor.extract(engine, result),
+        groupHeader = extractor.extract<GroupHeaderState>(result).firstOrNull(),
+        members = extractor.extract<GroupMemberState>(result),
       )
     }
 }
