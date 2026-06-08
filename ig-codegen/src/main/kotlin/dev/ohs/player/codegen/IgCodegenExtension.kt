@@ -34,7 +34,7 @@ abstract class IgCodegenExtension @Inject constructor(objects: ObjectFactory) {
 
   /**
    * Directory tree of runtime config `Binary-*.json` files codegen reads (ViewDefinition, ViewJoinMap,
-   * ViewConfig, view-type CodeSystem). These are the implementer's own artifacts — not the IG, which
+   * ViewConfig, view-type CodeSystem). These are the implementer's own artifacts, which
    * only ships examples. Defaults to the project's `src/commonMain/composeResources/files`.
    */
   val sourcesDir: DirectoryProperty = objects.directoryProperty()

@@ -40,10 +40,7 @@ import kotlinx.serialization.serializer
  * [ViewJoinMap] + its [ViewDefinition]s from the [configStore], interprets them against a
  * [SearchResult] — pivots, joins, `where` filters, `forEach`/`forEachOrNull`/`unionAll` expansion
  * and constants — into one JSON row per output row, and deserializes each row into the typed state
- * using the state's own (compiler-generated) serializer. No per-state factory, registry, or
- * generated glue.
- *
- * The [FhirPathEngine] is owned here, so callers never thread it through.
+ * using the state's own (compiler-generated) serializer.
  */
 class GenericStateExtractor(
   private val configStore: ConfigStore,

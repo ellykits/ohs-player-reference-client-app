@@ -31,7 +31,7 @@ import org.gradle.api.tasks.TaskProvider
  * The plugin:
  * 1. Registers the [IgCodegenTask] under the name `generateIgCode`.
  * 2. Reads `Binary-*.json` from [IgCodegenExtension.sourcesDir] (default
- *    `src/commonMain/composeResources/files`) — the implementer's own config artifacts, not the IG.
+ *    `src/commonMain/composeResources/files`) — the implementer's own config artifacts.
  * 3. Wires the output directory into the KMP `commonMain` source set so generated sources compile
  *    automatically.
  */

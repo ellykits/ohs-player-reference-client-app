@@ -16,8 +16,8 @@
 package dev.ohs.player.codegen.generator
 
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import dev.ohs.player.codegen.model.ViewConfigDefinition
+import dev.ohs.player.codegen.util.fieldType
 import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
@@ -39,41 +39,20 @@ class ConfigBinaryGenerator(basePackage: String, private val outputDir: File) {
     }
     val name = "${def.viewType.replaceFirstChar { it.uppercase() }}Config"
 
-    val ctor = FunSpec.constructorBuilder()
-    val cls = TypeSpec.classBuilder(name).addModifiers(KModifier.DATA).addAnnotation(serializableClass)
+    val constructor = FunSpec.constructorBuilder()
+    val clazz = TypeSpec.classBuilder(name).addModifiers(KModifier.DATA).addAnnotation(serializableClass)
 
     def.property.forEach { property ->
       val type = fieldType(property)
       val default = if (property.collection) "emptyList()" else "null"
-      ctor.addParameter(ParameterSpec.builder(property.name, type).defaultValue(default).build())
-      cls.addProperty(PropertySpec.builder(property.name, type).initializer(property.name).build())
+      constructor.addParameter(ParameterSpec.builder(property.name, type).defaultValue(default).build())
+      clazz.addProperty(PropertySpec.builder(property.name, type).initializer(property.name).build())
     }
 
     FileSpec.builder(configPkg, name)
       .addFileComment("Generated from ViewConfig Binary '${def.viewType}'. Do not edit manually.")
-      .addType(cls.primaryConstructor(ctor.build()).build())
+      .addType(clazz.primaryConstructor(constructor.build()).build())
       .build()
       .writeFormattedTo(outputDir)
   }
-
-  /** Collection properties become `List<T>`; scalars become `T?`. */
-  private fun fieldType(property: ViewConfigDefinition.Property): TypeName {
-    val scalar = scalarType(property.type)
-    return if (property.collection) {
-      List::class.asClassName().parameterizedBy(scalar.copy(nullable = false))
-    } else {
-      scalar.copy(nullable = true)
-    }
-  }
-
-  private fun scalarType(fhirType: String?): TypeName =
-    when (fhirType?.substringAfterLast('/')) {
-      "boolean" -> Boolean::class.asTypeName()
-      "decimal" -> Float::class.asTypeName()
-      "integer",
-      "positiveInt",
-      "unsignedInt" -> Int::class.asTypeName()
-      "integer64" -> Long::class.asTypeName()
-      else -> String::class.asTypeName()
-    }
 }

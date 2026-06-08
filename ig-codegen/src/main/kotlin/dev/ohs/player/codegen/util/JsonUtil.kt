@@ -13,19 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ohs.player.codegen.model.fhir
+package dev.ohs.player.codegen.util
 
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
-/** Minimal model for deserializing a FHIR CodeSystem JSON artifact from the IG. */
-@Serializable
-data class CodeSystem(
-  val resourceType: String,
-  val id: String,
-  val name: String,
-  val title: String? = null,
-  val description: String? = null,
-  val concept: List<Concept> = emptyList(),
-) {
-  @Serializable data class Concept(val code: String, val display: String? = null)
-}
+val json = Json { ignoreUnknownKeys = true }

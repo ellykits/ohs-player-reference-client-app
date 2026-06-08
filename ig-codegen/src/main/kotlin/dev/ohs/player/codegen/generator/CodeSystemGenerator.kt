@@ -16,7 +16,7 @@
 package dev.ohs.player.codegen.generator
 
 import com.squareup.kotlinpoet.*
-import dev.ohs.player.codegen.model.fhir.CodeSystem
+import dev.ohs.player.codegen.model.CodeSystem
 import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
@@ -34,26 +34,21 @@ class CodeSystemGenerator(
   private val viewTypeClass = ClassName("dev.ohs.player.library.registry", "ViewType")
 
   fun generate(codeSystem: CodeSystem) {
-    val kdoc =
-      buildString {
-          codeSystem.title?.let { append(it).append(".\n") }
-          codeSystem.description?.let { append("\n").append(it) }
-        }
-        .trim()
-
-    val objectBuilder = TypeSpec.objectBuilder(codeSystem.name).addKdoc(kdoc)
-    codeSystem.concept.forEach { concept ->
-      objectBuilder.addProperty(
-        PropertySpec.builder(concept.code, viewTypeClass)
-          .initializer("%T(%S)", viewTypeClass, concept.code)
-          .addKdoc(concept.display ?: concept.code)
-          .build()
-      )
-    }
-
     FileSpec.builder("$basePackage.$subPackage", codeSystem.name)
       .addFileComment("Generated from CodeSystem/${codeSystem.id}. Do not edit manually.")
-      .addType(objectBuilder.build())
+      .addType( TypeSpec.objectBuilder(codeSystem.name).addKdoc( buildString {
+        codeSystem.title?.let { append(it).append(".\n") }
+        codeSystem.description?.let { append("\n").append(it) }
+      }
+        .trim()
+      ).addProperties(
+        codeSystem.concept.map { concept ->
+          PropertySpec.builder(concept.code, viewTypeClass)
+            .initializer("%T(%S)", viewTypeClass, concept.code)
+            .addKdoc(concept.display ?: concept.code)
+            .build()
+        }
+      ).build())
       .build()
       .writeFormattedTo(outputDir)
   }

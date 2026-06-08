@@ -20,9 +20,9 @@ import dev.ohs.player.codegen.generator.CodeSystemGenerator
 import dev.ohs.player.codegen.generator.ConfigBinaryGenerator
 import dev.ohs.player.codegen.model.ViewConfigDefinition
 import dev.ohs.player.codegen.model.ViewJoinMap
-import dev.ohs.player.codegen.model.fhir.CodeSystem
-import dev.ohs.player.codegen.model.fhir.ViewDefinition
-import java.io.File
+import dev.ohs.player.codegen.model.CodeSystem
+import dev.ohs.player.codegen.model.ViewDefinition
+import dev.ohs.player.codegen.util.json
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
