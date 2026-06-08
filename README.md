@@ -243,6 +243,23 @@ Run JVM tests only:
 ./gradlew :ohs-player-library:jvmTest :ohs-player-reference-app:jvmTest
 ```
 
+### Local Release Signing (Android)
+
+Release Android builds are signed via environment variables in CI. To test a signed
+release build locally, copy `keystore.properties.template` to `keystore.properties`
+and fill in the four values:
+
+```shell
+cp keystore.properties.template keystore.properties
+# Edit keystore.properties with your keystore path, alias, and passwords, then:
+./gradlew :ohs-player-reference-app:bundleRelease
+```
+
+`keystore.properties` is gitignored — never commit it. Environment variables
+(`ANDROID_KEYSTORE_PATH`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`,
+`ANDROID_STORE_PASSWORD`) take precedence over the file when both are set. If
+neither is configured, release builds are emitted unsigned.
+
 ---
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html), [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform), [Kotlin/Wasm](https://kotl.in/wasm/).

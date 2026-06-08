@@ -50,8 +50,8 @@ fun GroupCard(
   val memberLabel = if (count == "1") "1 member" else "$count members"
 
   CardView(
-    elevationDp = config.elevation ?: 2f,
-    contentPaddingDp = config.padding ?: 16f,
+    elevationDp = config.elevation?.floatValue() ?: 2f,
+    contentPaddingDp = config.padding?.floatValue() ?: 16f,
     onClick = onClick,
   ) {
     header {

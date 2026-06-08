@@ -83,11 +83,14 @@ class SectionCardLayoutRenderer<T>(
 
     Card(
       modifier = modifier.fillMaxWidth(),
-      elevation = CardDefaults.elevatedCardElevation(defaultElevation = (config.elevation ?: 2f).dp),
+      elevation =
+        CardDefaults.elevatedCardElevation(
+          defaultElevation = (config.elevation?.floatValue() ?: 2f).dp
+        ),
     ) {
       Column {
         Box(modifier = Modifier.fillMaxWidth().height(3.dp).background(tint))
-        Column(modifier = Modifier.padding((config.padding ?: 16f).dp)) {
+        Column(modifier = Modifier.padding((config.padding?.floatValue() ?: 16f).dp)) {
           Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Box(
               modifier =

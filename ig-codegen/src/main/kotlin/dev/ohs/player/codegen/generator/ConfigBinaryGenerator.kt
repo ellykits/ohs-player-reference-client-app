@@ -17,7 +17,9 @@ package dev.ohs.player.codegen.generator
 
 import com.squareup.kotlinpoet.*
 import dev.ohs.player.codegen.model.ViewConfigDefinition
+import dev.ohs.player.codegen.util.contextualClassName
 import dev.ohs.player.codegen.util.fieldType
+import dev.ohs.player.codegen.util.needsContextual
 import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
@@ -46,7 +48,11 @@ class ConfigBinaryGenerator(basePackage: String, private val outputDir: File) {
       val type = fieldType(property)
       val default = if (property.collection) "emptyList()" else "null"
       constructor.addParameter(ParameterSpec.builder(property.name, type).defaultValue(default).build())
-      clazz.addProperty(PropertySpec.builder(property.name, type).initializer(property.name).build())
+      clazz.addProperty(PropertySpec.builder(property.name, type).initializer(property.name).apply {
+        if (needsContextual(property.type)) {
+          this.addAnnotation(contextualClassName)
+        }
+      }.build())
     }
 
     FileSpec.builder(configPkg, name)

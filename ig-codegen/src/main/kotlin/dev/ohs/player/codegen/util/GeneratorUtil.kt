@@ -12,6 +12,8 @@ private val fhirDateClass = ClassName("dev.ohs.fhir.model.r4", "FhirDate")
 private val fhirDateTimeClass = ClassName("dev.ohs.fhir.model.r4", "FhirDateTime")
 private val bigDecimalClass = ClassName("com.ionspin.kotlin.bignum.decimal", "BigDecimal")
 
+val contextualClassName = ClassName("kotlinx.serialization", "Contextual")
+
 /** Collection columns become `List<T>` (non-null elements); scalar columns become `T?`. */
 fun ViewDefinition.Column.fieldType(): TypeName {
   val scalar = scalarType(type)
@@ -46,3 +48,8 @@ fun scalarType(fhirType: String?): TypeName =
     "instant" -> fhirDateTimeClass
     else -> String::class.asTypeName()
   }
+
+
+/** Types that need `@Contextual` for kotlinx-serialization to resolve them. */
+fun needsContextual(fhirType: String?): Boolean =
+  fhirType?.substringAfterLast('/') in setOf("decimal", "date", "dateTime", "instant")

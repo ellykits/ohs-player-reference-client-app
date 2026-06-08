@@ -65,10 +65,13 @@ fun GroupHeaderCard(
 
   Card(
     modifier = modifier.fillMaxWidth(),
-    elevation = CardDefaults.elevatedCardElevation(defaultElevation = (config.elevation ?: 2f).dp),
+    elevation =
+      CardDefaults.elevatedCardElevation(
+        defaultElevation = (config.elevation?.floatValue() ?: 2f).dp
+      ),
   ) {
     Row(
-      modifier = Modifier.fillMaxWidth().padding((config.padding ?: 20f).dp),
+      modifier = Modifier.fillMaxWidth().padding((config.padding?.floatValue() ?: 20f).dp),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {

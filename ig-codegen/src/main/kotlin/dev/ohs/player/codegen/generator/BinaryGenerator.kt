@@ -18,7 +18,9 @@ package dev.ohs.player.codegen.generator
 import com.squareup.kotlinpoet.*
 import dev.ohs.player.codegen.model.ViewJoinMap
 import dev.ohs.player.codegen.model.ViewDefinition
+import dev.ohs.player.codegen.util.contextualClassName
 import dev.ohs.player.codegen.util.fieldType
+import dev.ohs.player.codegen.util.needsContextual
 import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
@@ -35,7 +37,6 @@ class BinaryGenerator(
   private val statePkg = "$basePackage.state"
 
   private val serializableClass = ClassName("kotlinx.serialization", "Serializable")
-  private val contextualClass = ClassName("kotlinx.serialization", "Contextual")
 
 
   fun generate(map: ViewJoinMap) {
@@ -69,11 +70,13 @@ class BinaryGenerator(
             .map { column ->
               val type = column.fieldType()
               val default = if (column.collection) "emptyList()" else "null"
-              constructor.addParameter(ParameterSpec.builder(column.name, type).defaultValue(default).build())
+              constructor.addParameter(
+                ParameterSpec.builder(column.name, type).defaultValue(default).build()
+              )
 
-             PropertySpec.builder(column.name, type).initializer(column.name).apply {
+              PropertySpec.builder(column.name, type).initializer(column.name).apply {
                 if (!column.collection && needsContextual(column.type)) {
-                  addAnnotation(contextualClass) //TODO remove contextual
+                  this.addAnnotation(contextualClassName)
                 }
               }.build()
             }
@@ -85,8 +88,4 @@ class BinaryGenerator(
       .build()
       .writeFormattedTo(outputDir)
   }
-
-  /** Types that need `@Contextual` for kotlinx-serialization to resolve them. */
-  private fun needsContextual(fhirType: String?): Boolean =
-    fhirType?.substringAfterLast('/') in setOf("decimal", "date", "dateTime", "instant")
 }
