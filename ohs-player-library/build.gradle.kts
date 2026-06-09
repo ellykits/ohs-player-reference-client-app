@@ -22,6 +22,7 @@ plugins {
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.composeMultiplatform)
   alias(libs.plugins.composeCompiler)
+  id("spotless-conventions")
 }
 
 kotlin {

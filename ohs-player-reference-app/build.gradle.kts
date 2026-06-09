@@ -25,6 +25,7 @@ plugins {
   alias(libs.plugins.composeCompiler)
   alias(libs.plugins.composeHotReload)
   alias(libs.plugins.kotlinSerialization)
+  id("spotless-conventions")
 }
 
 kotlin {
