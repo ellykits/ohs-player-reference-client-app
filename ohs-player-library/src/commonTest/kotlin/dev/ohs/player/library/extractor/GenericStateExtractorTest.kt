@@ -145,6 +145,7 @@ class GenericStateExtractorTest {
       "name": "patientTelecomTest", "from": "root", "resource": "Patient", "view": "TelecomView" }
     """
 
+  //TODO replace all FhirR4Json with regular Json once beta04 is available
   private fun resource(json: String): Resource = FhirR4Json().decodeFromString(json)
 
   private fun extractorOf(vararg configs: String): GenericStateExtractor =
@@ -301,8 +302,7 @@ class GenericStateExtractorTest {
       extractorOf(view, map)
         .extract<DecimalConstTestState>(SearchResult(resource = resource(location)))
 
-    // longitude -122.5 < 0.0 → the row is kept only if the %boundary decimal constant compares
-    // correctly.
+    // longitude -122.5 < 0.0 the row is kept only if the %boundary decimals compare
     assertEquals(listOf("loc1"), states.map { it.locId })
   }
 

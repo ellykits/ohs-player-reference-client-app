@@ -25,8 +25,8 @@ plugins {
   alias(libs.plugins.composeCompiler)
   alias(libs.plugins.composeHotReload)
   alias(libs.plugins.kotlinSerialization)
-  id("dev.ohs.ig-codegen")
-  id("spotless-conventions")
+//  id("dev.ohs.ig-codegen")
+//  id("spotless-conventions")
 }
 
 kotlin {
@@ -172,52 +172,6 @@ android {
     targetCompatibility = JavaVersion.VERSION_11
   }
 }
-
-igCodegen {
-  // sourcesDir defaults to src/commonMain/composeResources/files (the bundled runtime config).
-  packageName = "dev.ohs.player.generated"
-}
-
-// Auto-generate the runtime config manifest from the bundled config directory, so it never drifts.
-// Compose resources can't enumerate a directory at runtime, so LocalConfigSource reads this list.
-val generateConfigManifest by
-  tasks.registering {
-    val configDir = layout.projectDirectory.dir("src/commonMain/composeResources/files/states")
-    val manifest = configDir.file("manifest.txt")
-    inputs.files(fileTree(configDir) { include("Binary-*.json") })
-    outputs.file(manifest)
-    doLast {
-      val names =
-        configDir.asFile
-          .listFiles { f -> f.isFile && f.name.startsWith("Binary-") && f.extension == "json" }
-          ?.map { it.name }
-          ?.sorted()
-          .orEmpty()
-      manifest.asFile.writeText(names.joinToString("\n") + "\n")
-    }
-  }
-
-// Every task that reads the bundled config directory must run after the manifest is written.
-val configManifestConsumers =
-  listOf(
-    "prepareComposeResourcesTask",
-    "convertXmlValueResources",
-    "copyNonXmlValueResources",
-    "generateResourceAccessors",
-    "generateActualResourceCollectors",
-    "generateExpectResourceCollectors",
-    "generateComposeResClass",
-    "generateIgCode",
-  )
-
-tasks
-  .matching { task ->
-    configManifestConsumers.any { task.name.startsWith(it) } ||
-      task.name.endsWith("ProcessResources")
-  }
-  .configureEach { dependsOn(generateConfigManifest) }
-
-dependencies { debugImplementation(libs.compose.uiTooling) }
 
 /*
  * Desktop installer version. WiX/MSI (and jpackage) require a strict numeric

@@ -15,6 +15,7 @@
  */
 package dev.ohs.player.library.config
 
+import dev.ohs.player.library.extractor.stateJson
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.DeserializationStrategy
@@ -35,10 +36,6 @@ import kotlinx.serialization.json.jsonObject
  */
 class ConfigStore(private val source: ConfigSource) {
 
-  private val json = Json {
-    ignoreUnknownKeys = true
-    serializersModule = fhirScalarSerializers
-  }
   private val resources = mutableMapOf<String, JsonObject>()
   private val mutex = Mutex()
   private var loaded = false
@@ -54,14 +51,14 @@ class ConfigStore(private val source: ConfigSource) {
   ): T? {
     ensureLoaded()
     val raw = resources[indexKey(resourceType, key)] ?: return null
-    return json.decodeFromJsonElement(deserializer, raw)
+    return stateJson.decodeFromJsonElement(deserializer, raw)
   }
 
   private suspend fun ensureLoaded() {
     if (loaded) return
     mutex.withLock {
       if (loaded) return
-      source.readAll().forEach { index(json.parseToJsonElement(it).jsonObject) }
+      source.readAll().forEach { index(stateJson.parseToJsonElement(it).jsonObject) }
       loaded = true
     }
   }

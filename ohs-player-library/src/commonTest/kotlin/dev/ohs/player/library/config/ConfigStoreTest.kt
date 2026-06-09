@@ -42,7 +42,7 @@ class ConfigStoreTest {
 
   @Serializable private data class Questionnaire(val id: String, val title: String)
 
-  private fun storeOf(vararg resources: String) = ConfigStore(ConfigSource { resources.toList() })
+  private fun storeOf(vararg resources: String) = ConfigStore { resources.toList() }
 
   @Test
   fun get_returnsResource_byResourceTypeAndKey() = runTest {
