@@ -33,8 +33,9 @@ import org.gradle.api.provider.Property
 abstract class IgCodegenExtension @Inject constructor(objects: ObjectFactory) {
 
   /**
-   * Directory tree of runtime config `Binary-*.json` and CodeSystem-*.json files codegen reads (ViewDefinition, ViewJoinMap,
-   * ViewConfig, CodeSystem for the view type).Defaults to the project's `src/commonMain/composeResources/files`.
+   * Directory tree of runtime config `Binary-*.json` and CodeSystem-*.json files codegen reads
+   * (ViewDefinition, ViewJoinMap, ViewConfig, CodeSystem for the view type).Defaults to the
+   * project's `src/commonMain/composeResources/files`.
    */
   val sourcesDir: DirectoryProperty = objects.directoryProperty()
 

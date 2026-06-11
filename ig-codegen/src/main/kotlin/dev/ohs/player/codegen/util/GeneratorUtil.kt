@@ -1,3 +1,18 @@
+/*
+ * Copyright 2026 Open Health Stack Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package dev.ohs.player.codegen.util
 
 import com.squareup.kotlinpoet.ClassName
@@ -24,7 +39,6 @@ fun ViewDefinition.Column.fieldType(): TypeName {
   }
 }
 
-
 /** Collection properties become `List<T>`; scalars become `T?`. */
 fun fieldType(property: ViewConfigDefinition.Property): TypeName {
   val scalar = scalarType(property.type)
@@ -48,7 +62,6 @@ fun scalarType(fhirType: String?): TypeName =
     "instant" -> fhirDateTimeClass
     else -> String::class.asTypeName()
   }
-
 
 /** Types that need `@Contextual` for kotlinx-serialization to resolve them. */
 fun needsContextual(fhirType: String?): Boolean =

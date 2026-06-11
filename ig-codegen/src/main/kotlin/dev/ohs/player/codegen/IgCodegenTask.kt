@@ -15,26 +15,33 @@
  */
 package dev.ohs.player.codegen
 
+import dev.ohs.player.codegen.generator.ViewConfigGenerator
 import dev.ohs.player.codegen.generator.ViewStateGenerator
 import dev.ohs.player.codegen.generator.ViewTypeGenerator
-import dev.ohs.player.codegen.generator.ViewConfigGenerator
-import dev.ohs.player.codegen.model.ViewConfigDefinition
-import dev.ohs.player.codegen.model.ViewJoinMap
 import dev.ohs.player.codegen.model.CodeSystem
+import dev.ohs.player.codegen.model.ViewConfigDefinition
 import dev.ohs.player.codegen.model.ViewDefinition
+import dev.ohs.player.codegen.model.ViewJoinMap
 import dev.ohs.player.codegen.util.json
 import dev.ohs.player.codegen.util.resourceType
+import kotlinx.serialization.json.jsonObject
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.*
-import kotlinx.serialization.json.jsonObject
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 
 /**
  * Gradle task that generates Kotlin source from runtime config Binaries and CodeSystem.
  *
- * Every `Binary-*.json` and `CodeSystem-*.json` under [sourcesDir] is routed by its top-level `resourceType` — the same
- * discriminator the runtime `ConfigStore` uses — and turned into typed code:
+ * Every `Binary-*.json` and `CodeSystem-*.json` under [sourcesDir] is routed by its top-level
+ * `resourceType` — the same discriminator the runtime `ConfigStore` uses — and turned into typed
+ * code:
  * - **ViewDefinition** to columns feeding state generation
  * - **ViewJoinMap** to a `@Serializable` state data class in the `state` package
  * - **ViewConfig** to a `@Serializable` config data class in the `config` package
@@ -70,11 +77,15 @@ abstract class IgCodegenTask : DefaultTask() {
     val resources =
       sourcesRoot
         .walkTopDown()
-        .filter { it.isFile && (it.name.startsWith("Binary-") || it.name.startsWith("CodeSystem-") ) && it.extension == "json" }
-        .mapNotNull { file -> runCatching { json.parseToJsonElement(file.readText()).jsonObject }.getOrNull() }
+        .filter {
+          it.isFile &&
+            (it.name.startsWith("Binary-") || it.name.startsWith("CodeSystem-")) &&
+            it.extension == "json"
+        }
+        .mapNotNull { file ->
+          runCatching { json.parseToJsonElement(file.readText()).jsonObject }.getOrNull()
+        }
         .toList()
-
-
 
     // ViewDefinitions provide the columns; index them by name for the state generator.
     val viewDefs =

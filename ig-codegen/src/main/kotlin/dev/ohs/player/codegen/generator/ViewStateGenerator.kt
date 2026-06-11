@@ -15,9 +15,15 @@
  */
 package dev.ohs.player.codegen.generator
 
-import com.squareup.kotlinpoet.*
-import dev.ohs.player.codegen.model.ViewJoinMap
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import dev.ohs.player.codegen.model.ViewDefinition
+import dev.ohs.player.codegen.model.ViewJoinMap
 import dev.ohs.player.codegen.util.contextualClassName
 import dev.ohs.player.codegen.util.fieldType
 import dev.ohs.player.codegen.util.needsContextual
@@ -25,9 +31,9 @@ import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
 /**
- * Generates a `@Serializable` state data class from a [ViewJoinMap], merging the columns of its pivot
- * [ViewDefinition] and every joined one. The class name is the PascalCased map name plus suffix`State`
- * (e.g. `patientAllergy` generates `PatientAllergyState`).
+ * Generates a `@Serializable` state data class from a [ViewJoinMap], merging the columns of its
+ * pivot [ViewDefinition] and every joined one. The class name is the PascalCased map name plus
+ * suffix`State` (e.g. `patientAllergy` generates `PatientAllergyState`).
  */
 class ViewStateGenerator(
   basePackage: String,
@@ -37,7 +43,6 @@ class ViewStateGenerator(
   private val statePkg = "$basePackage.state"
 
   private val serializableClass = ClassName("kotlinx.serialization", "Serializable")
-
 
   fun generate(map: ViewJoinMap) {
     val columns = mergedColumns(map)
@@ -54,7 +59,9 @@ class ViewStateGenerator(
     map.joins.forEachIndexed { i, join ->
       val joinView =
         viewDefsMap[join.view]
-          ?: error("BinaryGenerator: ViewDefinition '${join.view}' not found in join[$i] of '${map.name}'")
+          ?: error(
+            "BinaryGenerator: ViewDefinition '${join.view}' not found in join[$i] of '${map.name}'"
+          )
       addAll(joinView.allColumns())
     }
   }
@@ -62,10 +69,11 @@ class ViewStateGenerator(
   private fun generateState(name: String, mapName: String, columns: List<ViewDefinition.Column>) {
     val constructor = FunSpec.constructorBuilder()
     val stateClass =
-      TypeSpec.classBuilder(name).addModifiers(KModifier.DATA)
+      TypeSpec.classBuilder(name)
+        .addModifiers(KModifier.DATA)
         .addAnnotation(serializableClass)
         .addProperties(
-          columns    // Deduplicate by name: unionAll blocks repeat column names
+          columns // Deduplicate by name: unionAll blocks repeat column names
             .distinctBy { it.name }
             .map { column ->
               val type = column.fieldType()
@@ -74,11 +82,14 @@ class ViewStateGenerator(
                 ParameterSpec.builder(column.name, type).defaultValue(default).build()
               )
 
-              PropertySpec.builder(column.name, type).initializer(column.name).apply {
-                if (!column.collection && needsContextual(column.type)) {
-                  this.addAnnotation(contextualClassName)
+              PropertySpec.builder(column.name, type)
+                .initializer(column.name)
+                .apply {
+                  if (!column.collection && needsContextual(column.type)) {
+                    this.addAnnotation(contextualClassName)
+                  }
                 }
-              }.build()
+                .build()
             }
         )
 

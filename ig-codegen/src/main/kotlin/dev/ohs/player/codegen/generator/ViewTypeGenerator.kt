@@ -15,15 +15,18 @@
  */
 package dev.ohs.player.codegen.generator
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import dev.ohs.player.codegen.model.CodeSystem
 import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
 /**
  * Generates a view-type constants object from a [CodeSystem]. Each concept becomes a `ViewType`
- * property named after its code (e.g. `val PatientHeader = ViewType("PatientHeader")`); the object is
- * named after the CodeSystem (e.g. `ViewTypeCS`).
+ * property named after its code (e.g. `val PatientHeader = ViewType("PatientHeader")`); the object
+ * is named after the CodeSystem (e.g. `ViewTypeCS`).
  */
 class ViewTypeGenerator(
   private val basePackage: String,
@@ -36,19 +39,25 @@ class ViewTypeGenerator(
   fun generate(codeSystem: CodeSystem) {
     FileSpec.builder("$basePackage.$subPackage", codeSystem.name)
       .addFileComment("Generated from CodeSystem/${codeSystem.id}. Do not edit manually.")
-      .addType( TypeSpec.objectBuilder(codeSystem.name).addKdoc( buildString {
-        codeSystem.title?.let { append(it).append(".\n") }
-        codeSystem.description?.let { append("\n").append(it) }
-      }
-        .trim()
-      ).addProperties(
-        codeSystem.concept.map { concept ->
-          PropertySpec.builder(concept.code, viewTypeClass)
-            .initializer("%T(%S)", viewTypeClass, concept.code)
-            .addKdoc(concept.display ?: concept.code)
-            .build()
-        }
-      ).build())
+      .addType(
+        TypeSpec.objectBuilder(codeSystem.name)
+          .addKdoc(
+            buildString {
+                codeSystem.title?.let { append(it).append(".\n") }
+                codeSystem.description?.let { append("\n").append(it) }
+              }
+              .trim()
+          )
+          .addProperties(
+            codeSystem.concept.map { concept ->
+              PropertySpec.builder(concept.code, viewTypeClass)
+                .initializer("%T(%S)", viewTypeClass, concept.code)
+                .addKdoc(concept.display ?: concept.code)
+                .build()
+            }
+          )
+          .build()
+      )
       .build()
       .writeFormattedTo(outputDir)
   }

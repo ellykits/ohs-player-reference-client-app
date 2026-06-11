@@ -15,7 +15,13 @@
  */
 package dev.ohs.player.codegen.generator
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import dev.ohs.player.codegen.model.ViewConfigDefinition
 import dev.ohs.player.codegen.util.contextualClassName
 import dev.ohs.player.codegen.util.fieldType
@@ -26,9 +32,9 @@ import java.io.File
 /**
  * Generates a `@Serializable` config data class from a [ViewConfigDefinition] Binary.
  *
- * The class name is the PascalCased view type plus suffix `Config` (e.g. `PatientHeader` → `PatientHeaderConfig`),
- * and each declared property becomes a nullable field. The library deserializes the Binary's property
- * values into an instance of this class at runtime.
+ * The class name is the PascalCased view type plus suffix `Config` (e.g. `PatientHeader` →
+ * `PatientHeaderConfig`), and each declared property becomes a nullable field. The library
+ * deserializes the Binary's property values into an instance of this class at runtime.
  */
 class ViewConfigGenerator(basePackage: String, private val outputDir: File) {
 
@@ -42,17 +48,25 @@ class ViewConfigGenerator(basePackage: String, private val outputDir: File) {
     val name = "${def.viewType.replaceFirstChar { it.uppercase() }}Config"
 
     val constructor = FunSpec.constructorBuilder()
-    val clazz = TypeSpec.classBuilder(name).addModifiers(KModifier.DATA).addAnnotation(serializableClass)
+    val clazz =
+      TypeSpec.classBuilder(name).addModifiers(KModifier.DATA).addAnnotation(serializableClass)
 
     def.property.forEach { property ->
       val type = fieldType(property)
       val default = if (property.collection) "emptyList()" else "null"
-      constructor.addParameter(ParameterSpec.builder(property.name, type).defaultValue(default).build())
-      clazz.addProperty(PropertySpec.builder(property.name, type).initializer(property.name).apply {
-        if (needsContextual(property.type)) {
-          this.addAnnotation(contextualClassName)
-        }
-      }.build())
+      constructor.addParameter(
+        ParameterSpec.builder(property.name, type).defaultValue(default).build()
+      )
+      clazz.addProperty(
+        PropertySpec.builder(property.name, type)
+          .initializer(property.name)
+          .apply {
+            if (needsContextual(property.type)) {
+              this.addAnnotation(contextualClassName)
+            }
+          }
+          .build()
+      )
     }
 
     FileSpec.builder(configPkg, name)

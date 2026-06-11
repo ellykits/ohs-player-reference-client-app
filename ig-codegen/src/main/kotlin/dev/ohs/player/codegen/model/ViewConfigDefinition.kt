@@ -20,9 +20,9 @@ import kotlinx.serialization.Serializable
 /**
  * Model for deserializing a ViewConfig Binary — a self-describing UI config bound to a view type.
  *
- * Each [property] declares one field (name + FHIR type); codegen turns the property list into a typed
- * `@Serializable` config class. The property's default value (`value*`) is ignored here — it is read
- * at runtime by the library.
+ * Each [property] declares one field (name + FHIR type); codegen turns the property list into a
+ * typed `@Serializable` config class. The property's default value (`value*`) is ignored here — it
+ * is read at runtime by the library.
  */
 @Serializable
 data class ViewConfigDefinition(

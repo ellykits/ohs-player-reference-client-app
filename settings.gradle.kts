@@ -21,6 +21,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 includeBuild("ig-codegen")
 
 pluginManagement {
+  includeBuild("build-logic")
   repositories {
     google {
       mavenContent {
