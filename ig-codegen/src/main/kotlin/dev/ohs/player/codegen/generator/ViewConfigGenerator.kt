@@ -23,9 +23,8 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.ohs.player.codegen.model.ViewConfigDefinition
-import dev.ohs.player.codegen.util.contextualClassName
 import dev.ohs.player.codegen.util.fieldType
-import dev.ohs.player.codegen.util.needsContextual
+import dev.ohs.player.codegen.util.useSerializersAnnotation
 import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
@@ -58,19 +57,13 @@ class ViewConfigGenerator(basePackage: String, private val outputDir: File) {
         ParameterSpec.builder(property.name, type).defaultValue(default).build()
       )
       clazz.addProperty(
-        PropertySpec.builder(property.name, type)
-          .initializer(property.name)
-          .apply {
-            if (needsContextual(property.type)) {
-              this.addAnnotation(contextualClassName)
-            }
-          }
-          .build()
+        PropertySpec.builder(property.name, type).initializer(property.name).build()
       )
     }
 
     FileSpec.builder(configPkg, name)
       .addFileComment("Generated from ViewConfig Binary '${def.viewType}'. Do not edit manually.")
+      .apply { useSerializersAnnotation(def.property.map { it.type })?.let { addAnnotation(it) } }
       .addType(clazz.primaryConstructor(constructor.build()).build())
       .build()
       .writeFormattedTo(outputDir)

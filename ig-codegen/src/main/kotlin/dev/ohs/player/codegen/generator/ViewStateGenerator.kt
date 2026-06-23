@@ -24,9 +24,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.ohs.player.codegen.model.ViewDefinition
 import dev.ohs.player.codegen.model.ViewJoinMap
-import dev.ohs.player.codegen.util.contextualClassName
 import dev.ohs.player.codegen.util.fieldType
-import dev.ohs.player.codegen.util.needsContextual
+import dev.ohs.player.codegen.util.useSerializersAnnotation
 import dev.ohs.player.codegen.writeFormattedTo
 import java.io.File
 
@@ -67,34 +66,29 @@ class ViewStateGenerator(
   }
 
   private fun generateState(name: String, mapName: String, columns: List<ViewDefinition.Column>) {
+    val distinctColumns = columns.distinctBy { it.name } // unionAll blocks repeat column names
     val constructor = FunSpec.constructorBuilder()
     val stateClass =
       TypeSpec.classBuilder(name)
         .addModifiers(KModifier.DATA)
         .addAnnotation(serializableClass)
         .addProperties(
-          columns // Deduplicate by name: unionAll blocks repeat column names
-            .distinctBy { it.name }
-            .map { column ->
-              val type = column.fieldType()
-              val default = if (column.collection) "emptyList()" else "null"
-              constructor.addParameter(
-                ParameterSpec.builder(column.name, type).defaultValue(default).build()
-              )
+          distinctColumns.map { column ->
+            val type = column.fieldType()
+            val default = if (column.collection) "emptyList()" else "null"
+            constructor.addParameter(
+              ParameterSpec.builder(column.name, type).defaultValue(default).build()
+            )
 
-              PropertySpec.builder(column.name, type)
-                .initializer(column.name)
-                .apply {
-                  if (!column.collection && needsContextual(column.type)) {
-                    this.addAnnotation(contextualClassName)
-                  }
-                }
-                .build()
-            }
+            PropertySpec.builder(column.name, type).initializer(column.name).build()
+          }
         )
 
     FileSpec.builder(statePkg, name)
       .addFileComment("Generated from ViewJoinMap '$mapName'. Do not edit manually.")
+      .apply {
+        useSerializersAnnotation(distinctColumns.map { it.type })?.let { addAnnotation(it) }
+      }
       .addType(stateClass.primaryConstructor(constructor.build()).build())
       .build()
       .writeFormattedTo(outputDir)

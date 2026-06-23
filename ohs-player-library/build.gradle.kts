@@ -48,9 +48,11 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
-      api(libs.kotlinx.serialization.json)
+      implementation(libs.kotlinx.serialization.json)
       implementation(libs.ohs.fhir.model)
-      api(libs.ohs.fhir.path)
+      implementation(libs.ohs.fhir.path)
+      implementation(libs.ionspin.bignum)
+      implementation(libs.kermit)
       implementation(libs.kotlinx.datetime)
       implementation(libs.compose.runtime)
       implementation(libs.compose.ui)
